@@ -1,13 +1,15 @@
 using API.Extensions;
+using LoggerService;
 using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Host.SerilogConfiguration();
 builder.Services.AddControllers();
 builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 
 var app = builder.Build();
 
