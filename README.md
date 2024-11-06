@@ -1,7 +1,7 @@
-# Hotel Management System
+# ReserveHub
 
 ## Overview
-Welcome to Hotel Management System! This is a web application that allows customers to easily book and manage their hotel stays.
+Welcome to ReserveHub! This is a web application for hotel management that allows customers to easily book and manage their hotel stays.
 
 ## Features
 
