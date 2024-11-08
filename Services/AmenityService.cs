@@ -1,0 +1,16 @@
+using Contracts;
+using Contracts.Repositories;
+using Service.Contracts;
+namespace Services;
+
+internal sealed class AmenityService : IAmenityService
+{
+    private readonly IRepositoryManager _repository;
+    private readonly ILoggerManager _logger;
+
+    public AmenityService(IRepositoryManager repository, ILoggerManager logger)
+    {
+        _repository = repository;
+        _logger = logger;
+    }
+}
