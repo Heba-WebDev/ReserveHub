@@ -23,8 +23,7 @@ public static class ServiceExtensions
     public static void ConfigurePostgreSqlContext(this IServiceCollection services,
         IConfiguration configuration) =>
         services.AddDbContext<RepositoryContext>(opts =>
-            opts.UseNpgsql(configuration.GetConnectionString("Default"),
-                b => b.MigrationsAssembly("Repositories")));
+            opts.UseNpgsql(configuration.GetConnectionString("Default")));
     public static void ConfigureRepositoryManager(this IServiceCollection services)
     {
         services.AddScoped<IRepositoryManager, RepositoryManager>();
