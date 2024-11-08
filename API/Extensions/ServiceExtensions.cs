@@ -1,5 +1,9 @@
+using Contracts;
 using Contracts.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Repositories;
+using Service.Contracts;
+using Services;
 namespace API.Extensions;
 public static class ServiceExtensions
 {
@@ -16,9 +20,17 @@ public static class ServiceExtensions
         services.Configure<IISOptions>(options =>
         {
         });
-
+    public static void ConfigurePostgreSqlContext(this IServiceCollection services,
+        IConfiguration configuration) =>
+        services.AddDbContext<RepositoryContext>(opts =>
+            opts.UseNpgsql(configuration.GetConnectionString("Default")));
     public static void ConfigureRepositoryManager(this IServiceCollection services)
     {
         services.AddScoped<IRepositoryManager, RepositoryManager>();
+    }
+
+    public static void ConfigureServiceManager(this IServiceCollection services)
+    {
+        services.AddScoped<IServiceManager, ServiceManager>();
     }
 }
