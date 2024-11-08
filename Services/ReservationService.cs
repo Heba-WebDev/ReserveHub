@@ -6,11 +6,9 @@ namespace Services;
 internal sealed class ReservationService : IRservationService
 {
     private readonly IRepositoryManager _repository;
-    private readonly ILoggerManager _logger;
 
-    public ReservationService(IRepositoryManager repository, ILoggerManager logger)
+    public ReservationService(IRepositoryManager repository)
     {
         _repository = repository;
-        _logger = logger;
     }
 }

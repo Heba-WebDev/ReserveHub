@@ -9,13 +9,13 @@ public class ServiceManager : IServiceManager
     private readonly Lazy<IRservationService> _reservationService;
     private readonly Lazy<IAmenityService> _amenityService;
     private readonly Lazy<IRoomAmenityService> _roomAmenityService;
-    public ServiceManager(IRepositoryManager repositoryManager, ILoggerManager logger)
+    public ServiceManager(IRepositoryManager repositoryManager)
     {
-        _customersService = new Lazy<ICustomerService>(() => new CustomerService(repositoryManager, logger));
-        _roomService = new Lazy<IRoomService>(() => new RoomService(repositoryManager, logger));
-        _reservationService = new Lazy<IRservationService>(() => new ReservationService(repositoryManager, logger));
-        _amenityService = new Lazy<IAmenityService>(() => new AmenityService(repositoryManager, logger));
-        _roomAmenityService = new Lazy<IRoomAmenityService>(() => new RoomAmenityService(repositoryManager, logger));
+        _customersService = new Lazy<ICustomerService>(() => new CustomerService(repositoryManager));
+        _roomService = new Lazy<IRoomService>(() => new RoomService(repositoryManager));
+        _reservationService = new Lazy<IRservationService>(() => new ReservationService(repositoryManager));
+        _amenityService = new Lazy<IAmenityService>(() => new AmenityService(repositoryManager));
+        _roomAmenityService = new Lazy<IRoomAmenityService>(() => new RoomAmenityService(repositoryManager));
     }
     public ICustomerService CustomerService => _customersService.Value;
 

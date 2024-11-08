@@ -6,11 +6,9 @@ namespace Services;
 internal sealed class AmenityService : IAmenityService
 {
     private readonly IRepositoryManager _repository;
-    private readonly ILoggerManager _logger;
 
-    public AmenityService(IRepositoryManager repository, ILoggerManager logger)
+    public AmenityService(IRepositoryManager repository)
     {
         _repository = repository;
-        _logger = logger;
     }
 }

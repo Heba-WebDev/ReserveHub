@@ -6,11 +6,9 @@ namespace Services;
 internal sealed class CustomerService : ICustomerService
 {
     private readonly IRepositoryManager _repository;
-    private readonly ILoggerManager _logger;
 
-    public CustomerService(IRepositoryManager repository, ILoggerManager logger)
+    public CustomerService(IRepositoryManager repository)
     {
         _repository = repository;
-        _logger = logger;
     }
 }
