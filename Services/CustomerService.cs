@@ -1,14 +1,31 @@
-using Contracts;
+using AutoMapper;
 using Contracts.Repositories;
 using Service.Contracts;
+using Shared.DataTransferObjects;
 namespace Services;
 
 internal sealed class CustomerService : ICustomerService
 {
     private readonly IRepositoryManager _repository;
+    private readonly IMapper _mapper;
 
-    public CustomerService(IRepositoryManager repository)
+    public CustomerService(IRepositoryManager repository, IMapper mapper)
     {
         _repository = repository;
+        _mapper = mapper;
+    }
+
+    public IEnumerable<CustomersDto> GetAllCustomers(bool trackChanges)
+    {
+        try
+        {
+            var customers = _repository.Customer.GetAllCustomers(trackChanges);
+            var dto = _mapper.Map<IEnumerable<CustomersDto>>(customers);
+            return dto;
+        } catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
     }
 }
