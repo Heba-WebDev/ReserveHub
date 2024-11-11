@@ -21,4 +21,11 @@ internal sealed class CustomerService : ICustomerService
             var dto = _mapper.Map<IEnumerable<CustomersDto>>(customers);
             return dto;
     }
+
+    public CustomersDto GetCustomer(Guid customerId, bool trackChanges)
+    {
+        var customer = _repository.Customer.GetCustomer(customerId, trackChanges);
+        var dto = _mapper.Map<CustomersDto>(customer);
+        return dto;
+    }
 }

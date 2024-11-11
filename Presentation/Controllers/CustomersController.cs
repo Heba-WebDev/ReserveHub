@@ -15,4 +15,11 @@ public class CustomersController : ControllerBase
         var customers = _service.CustomerService.GetAllCustomers(trackChanges: false);
             return Ok(customers);
     }
+
+    [HttpGet("{id:guid}")]
+    public IActionResult GetCustomer(Guid id)
+    {
+        var customer = _service.CustomerService.GetCustomer(id, trackChanges: false);
+        return Ok(customer);
+    }
 }
