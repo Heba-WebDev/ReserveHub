@@ -12,13 +12,7 @@ public class CustomersController : ControllerBase
     [HttpGet]
     public IActionResult GetCustomers()
     {
-        try
-        {
-            var customers = _service.CustomerService.GetAllCustomers(trackChanges: false);
+        var customers = _service.CustomerService.GetAllCustomers(trackChanges: false);
             return Ok(customers);
-        } catch
-        {
-            return StatusCode(500, "Internal server error");
-        }
     }
 }
