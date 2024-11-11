@@ -17,15 +17,8 @@ internal sealed class CustomerService : ICustomerService
 
     public IEnumerable<CustomersDto> GetAllCustomers(bool trackChanges)
     {
-        try
-        {
             var customers = _repository.Customer.GetAllCustomers(trackChanges);
             var dto = _mapper.Map<IEnumerable<CustomersDto>>(customers);
             return dto;
-        } catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-            throw;
-        }
     }
 }
