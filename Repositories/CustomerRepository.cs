@@ -11,4 +11,7 @@ public class CustomerRepository : RepositoryBase<Customer>, ICustomer
     FindAll(trackChanges)
     .OrderBy(x => x.FirstName)
     .ToList();
+
+    public Customer GetCustomer(Guid CustomerId, bool trackChanges) =>
+    FindByCondition(c => c.Id.Equals(CustomerId), trackChanges).SingleOrDefault()!;
 }
