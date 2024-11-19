@@ -14,4 +14,6 @@ public class CustomerRepository : RepositoryBase<Customer>, ICustomer
 
     public Customer GetCustomer(Guid CustomerId, bool trackChanges) =>
     FindByCondition(c => c.Id.Equals(CustomerId), trackChanges).SingleOrDefault()!;
+
+    public void CreateCustomer(Customer customer) => Create(customer);
 }
