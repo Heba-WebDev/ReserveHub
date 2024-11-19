@@ -13,5 +13,7 @@ public class MappingProfile : Profile
         .ForMember(des => des.LastName, src => src.MapFrom(x => x.LastName))
         .ForMember(des => des.Email, src => src.MapFrom(x => x.Email))
         .ForMember(des => des.Address, src => src.MapFrom(x => x.Address));
+
+        CreateMap<CreateCustomerRequestDto, Customer>();
     }
 }
