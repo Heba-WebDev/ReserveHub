@@ -1,6 +1,7 @@
 using AutoMapper;
 using Contracts.Repositories;
 using Entities.Exceptions;
+using Entities.Models;
 using Service.Contracts;
 using Shared.DataTransferObjects;
 namespace Services;
@@ -14,6 +15,15 @@ internal sealed class CustomerService : ICustomerService
     {
         _repository = repository;
         _mapper = mapper;
+    }
+
+    public CustomersDto CreateCustomer(CreateCustomerRequestDto customer)
+    {
+        var customerEntity = _mapper.Map<Customer>(customer);
+        _repository.Customer.CreateCustomer(customerEntity);
+        _repository.Save();
+        var responseDto = _mapper.Map<CustomersDto>(customerEntity);
+        return responseDto;
     }
 
     public IEnumerable<CustomersDto> GetAllCustomers(bool trackChanges)
