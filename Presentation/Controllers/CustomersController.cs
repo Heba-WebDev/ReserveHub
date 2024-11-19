@@ -16,7 +16,7 @@ public class CustomersController : ControllerBase
             return Ok(customers);
     }
 
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id:guid}", Name = "CustomerById")]
     public IActionResult GetCustomer(Guid id)
     {
         var customer = _service.CustomerService.GetCustomer(id, trackChanges: false);
