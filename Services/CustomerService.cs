@@ -20,7 +20,6 @@ internal sealed class CustomerService : ICustomerService
     public CustomersDto CreateCustomer(CreateCustomerRequestDto customer)
     {
         var customerEntity = _mapper.Map<Customer>(customer);
-        customerEntity.Password = BCrypt.Net.BCrypt.HashPassword(customer.Password);
         _repository.Customer.CreateCustomer(customerEntity);
         _repository.Save();
         var responseDto = _mapper.Map<CustomersDto>(customerEntity);

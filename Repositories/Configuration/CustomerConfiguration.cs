@@ -15,7 +15,6 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
                 FirstName = "John",
                 LastName = "Doe",
                 Email = "john_doe@test.com",
-                Password = BCrypt.Net.BCrypt.HashPassword("Test123_456"),
                 PhoneNumber = "462225252",
                 Address = "Street 102, Building 3, House 11"
             }
