@@ -1,6 +1,7 @@
 using AutoMapper;
 using Entities.Models;
 using Shared.DataTransferObjects;
+using Shared.DataTransferObjects.Users;
 namespace API;
 
 public class MappingProfile : Profile
@@ -15,5 +16,7 @@ public class MappingProfile : Profile
         .ForMember(des => des.Address, src => src.MapFrom(x => x.Address));
 
         CreateMap<CreateCustomerRequestDto, Customer>();
+        CreateMap<User, UserDto>();
+        CreateMap<CreateUserRequestDto, User>();
     }
 }
