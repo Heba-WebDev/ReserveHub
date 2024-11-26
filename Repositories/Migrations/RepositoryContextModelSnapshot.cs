@@ -61,7 +61,13 @@ namespace Repositories.Migrations
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Customers");
 
@@ -152,6 +158,48 @@ namespace Repositories.Migrations
                     b.ToTable("RoomAmenities");
                 });
 
+            modelBuilder.Entity("Entities.Models.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Entities.Models.Customer", b =>
+                {
+                    b.HasOne("Entities.Models.User", "User")
+                        .WithOne("Customers")
+                        .HasForeignKey("Entities.Models.Customer", "UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Entities.Models.RoomAmenity", b =>
                 {
                     b.HasOne("Entities.Models.Amenity", "Amenity")
@@ -179,6 +227,11 @@ namespace Repositories.Migrations
             modelBuilder.Entity("Entities.Models.Room", b =>
                 {
                     b.Navigation("RoomAmenities");
+                });
+
+            modelBuilder.Entity("Entities.Models.User", b =>
+                {
+                    b.Navigation("Customers");
                 });
 #pragma warning restore 612, 618
         }

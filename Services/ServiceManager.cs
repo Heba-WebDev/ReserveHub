@@ -5,6 +5,7 @@ using Service.Contracts;
 namespace Services;
 public class ServiceManager : IServiceManager
 {
+    private readonly Lazy<IUserService> _usersService;
     private readonly Lazy<ICustomerService> _customersService;
     private readonly Lazy<IRoomService> _roomService;
     private readonly Lazy<IRservationService> _reservationService;
@@ -12,12 +13,14 @@ public class ServiceManager : IServiceManager
     private readonly Lazy<IRoomAmenityService> _roomAmenityService;
     public ServiceManager(IRepositoryManager repositoryManager, IMapper mapper)
     {
+        _usersService = new Lazy<IUserService>(() => new UserService(repositoryManager, mapper));
         _customersService = new Lazy<ICustomerService>(() => new CustomerService(repositoryManager, mapper));
         _roomService = new Lazy<IRoomService>(() => new RoomService(repositoryManager));
         _reservationService = new Lazy<IRservationService>(() => new ReservationService(repositoryManager));
         _amenityService = new Lazy<IAmenityService>(() => new AmenityService(repositoryManager));
         _roomAmenityService = new Lazy<IRoomAmenityService>(() => new RoomAmenityService(repositoryManager));
     }
+    public IUserService UserService => _usersService.Value;
     public ICustomerService CustomerService => _customersService.Value;
 
     public IRoomService RoomService => _roomService.Value;

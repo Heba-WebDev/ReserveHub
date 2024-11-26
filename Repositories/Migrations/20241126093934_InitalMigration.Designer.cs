@@ -12,8 +12,8 @@ using Repositories;
 namespace Repositories.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20241119201809_UpdateCustomers")]
-    partial class UpdateCustomers
+    [Migration("20241126093934_InitalMigration")]
+    partial class InitalMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,14 +61,16 @@ namespace Repositories.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Customers");
 
@@ -80,7 +82,6 @@ namespace Repositories.Migrations
                             Email = "john_doe@test.com",
                             FirstName = "John",
                             LastName = "Doe",
-                            Password = "$2a$11$QwvfxSYtIiN1Gb3IfAewOOCwtVis2.69j4PFeCg4b.rBavXIASR1G",
                             PhoneNumber = "462225252"
                         });
                 });
@@ -160,6 +161,48 @@ namespace Repositories.Migrations
                     b.ToTable("RoomAmenities");
                 });
 
+            modelBuilder.Entity("Entities.Models.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Entities.Models.Customer", b =>
+                {
+                    b.HasOne("Entities.Models.User", "User")
+                        .WithOne("Customers")
+                        .HasForeignKey("Entities.Models.Customer", "UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Entities.Models.RoomAmenity", b =>
                 {
                     b.HasOne("Entities.Models.Amenity", "Amenity")
@@ -187,6 +230,11 @@ namespace Repositories.Migrations
             modelBuilder.Entity("Entities.Models.Room", b =>
                 {
                     b.Navigation("RoomAmenities");
+                });
+
+            modelBuilder.Entity("Entities.Models.User", b =>
+                {
+                    b.Navigation("Customers");
                 });
 #pragma warning restore 612, 618
         }
