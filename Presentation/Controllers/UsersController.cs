@@ -19,6 +19,13 @@ public class UsersController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
         var createdUser = _service.UserService.CreateUser(user);
-        return Ok(new { createdUser });
+        return CreatedAtRoute("UserById", new { id = createdUser.Id }, createdUser);
+    }
+
+    [HttpGet("{id:guid}", Name = "UserById")]
+    public IActionResult GetUserById(Guid id)
+    {
+        var user = _service.UserService.GetUserById(id, trackChanges: false);
+        return Ok(user);
     }
 }
