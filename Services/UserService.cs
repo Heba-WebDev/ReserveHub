@@ -36,4 +36,15 @@ public class UserService : IUserService
         var response_dto = _mapper.Map<UserDto>(user);
         return response_dto;
     }
+
+    public void UpdateUser(Guid userId, UpdateUserRequestDto user, bool trackChanges)
+    {
+        var entity = _repository.User.GetUser(userId, trackChanges);
+        if (entity is null)
+        {
+            throw new UserNotFoundException(userId);
+        }
+        _mapper.Map(user, entity);
+        _repository.Save();
+    }
 }

@@ -28,4 +28,15 @@ public class UsersController : ControllerBase
         var user = _service.UserService.GetUserById(id, trackChanges: false);
         return Ok(user);
     }
+
+    [HttpPatch("{id:guid}")]
+    public IActionResult UpdateUser(Guid id, [FromBody] UpdateUserRequestDto updateUserRequestDto)
+    {
+        if (updateUserRequestDto is null)
+        {
+            return BadRequest("Body request is empty");
+        }
+        _service.UserService.UpdateUser(id, updateUserRequestDto, trackChanges: true);
+        return NoContent();
+    }
 }
