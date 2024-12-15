@@ -8,5 +8,5 @@ public interface IRepositoryManager
     IAmenity Amenity { get; }
     IRoomAmenity RoomAmenity { get; }
     IReservation Reservation { get; }
-    void Save();
+    Task SaveAsync();
 }
