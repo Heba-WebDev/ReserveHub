@@ -35,12 +35,18 @@ internal sealed class CustomerService : ICustomerService
 
     public async Task<CustomersDto?> GetCustomer(Guid customerId, bool trackChanges)
     {
+        var customer = await GetCustomerAndCheckIfItExists(customerId, trackChanges);
+        var dto = _mapper.Map<CustomersDto>(customer);
+        return dto;
+    }
+
+    private async Task<Customer?> GetCustomerAndCheckIfItExists(Guid customerId, bool trackChanges)
+    {
         var customer = await _repository.Customer.GetCustomer(customerId, trackChanges);
         if (customer == null)
         {
             throw new CustomerNotFoundException(customerId);
         }
-        var dto = _mapper.Map<CustomersDto>(customer);
-        return dto;
+        return customer;
     }
 }
