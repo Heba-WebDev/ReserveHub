@@ -1,5 +1,6 @@
 using Contracts.Repositories;
 using Entities.Models;
+using Microsoft.EntityFrameworkCore;
 namespace Repositories;
 
 public class CustomerRepository : RepositoryBase<Customer>, ICustomer
@@ -7,13 +8,13 @@ public class CustomerRepository : RepositoryBase<Customer>, ICustomer
     public CustomerRepository(RepositoryContext repositoryContext) : base(repositoryContext)
     {}
 
-    public IEnumerable<Customer> GetAllCustomers(bool trackChanges) =>
-    FindAll(trackChanges)
+    public async Task<IEnumerable<Customer>?> GetAllCustomers(bool trackChanges) =>
+    await FindAll(trackChanges)
     .OrderBy(x => x.FirstName)
-    .ToList();
+    .ToListAsync();
 
-    public Customer GetCustomer(Guid CustomerId, bool trackChanges) =>
-    FindByCondition(c => c.Id.Equals(CustomerId), trackChanges).SingleOrDefault()!;
+    public async Task<Customer?> GetCustomer(Guid CustomerId, bool trackChanges) =>
+    await FindByCondition(c => c.Id.Equals(CustomerId), trackChanges).SingleOrDefaultAsync()!;
 
     public void CreateCustomer(Customer customer) => Create(customer);
 }

@@ -3,7 +3,7 @@ namespace Service.Contracts;
 
 public interface ICustomerService
 {
-    IEnumerable<CustomersDto> GetAllCustomers(bool trackChanges);
-    CustomersDto GetCustomer(Guid CustomerId, bool trackChanges);
-    CustomersDto CreateCustomer(CreateCustomerRequestDto customer);
+    Task<IEnumerable<CustomersDto>?> GetAllCustomers(bool trackChanges);
+    Task<CustomersDto?> GetCustomer(Guid CustomerId, bool trackChanges);
+    Task<CustomersDto?> CreateCustomer(CreateCustomerRequestDto customer);
 }

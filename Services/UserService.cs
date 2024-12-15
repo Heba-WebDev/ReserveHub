@@ -16,19 +16,19 @@ public class UserService : IUserService
         _mapper = mapper;
     }
 
-    public UserDto CreateUser(CreateUserRequestDto user)
+    public async Task<UserDto> CreateUser(CreateUserRequestDto user)
     {
         var userEntity = _mapper.Map<User>(user);
         userEntity.Password = BCrypt.Net.BCrypt.HashPassword(userEntity.Password);
         _repository.User.CreateUser(userEntity);
-        _repository.Save();
+        await _repository.SaveAsync();
         var responseDto = _mapper.Map<UserDto>(userEntity);
         return responseDto;
     }
 
-    public UserDto GetUserById(Guid userId, bool trackChanges)
+    public async Task<UserDto> GetUserById(Guid userId, bool trackChanges)
     {
-        var user = _repository.User.GetUser(userId, trackChanges);
+        var user = await _repository.User.GetUser(userId, trackChanges);
         if (user == null)
         {
             throw new UserNotFoundException(userId);
@@ -37,14 +37,14 @@ public class UserService : IUserService
         return response_dto;
     }
 
-    public void UpdateUser(Guid userId, UpdateUserRequestDto user, bool trackChanges)
+    public async Task UpdateUser(Guid userId, UpdateUserRequestDto user, bool trackChanges)
     {
-        var entity = _repository.User.GetUser(userId, trackChanges);
+        var entity = await _repository.User.GetUser(userId, trackChanges);
         if (entity is null)
         {
             throw new UserNotFoundException(userId);
         }
         _mapper.Map(user, entity);
-        _repository.Save();
+        await _repository.SaveAsync();
     }
 }

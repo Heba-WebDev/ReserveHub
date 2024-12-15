@@ -17,25 +17,25 @@ internal sealed class CustomerService : ICustomerService
         _mapper = mapper;
     }
 
-    public CustomersDto CreateCustomer(CreateCustomerRequestDto customer)
+    public async Task<CustomersDto?> CreateCustomer(CreateCustomerRequestDto customer)
     {
         var customerEntity = _mapper.Map<Customer>(customer);
         _repository.Customer.CreateCustomer(customerEntity);
-        _repository.Save();
+        await _repository.SaveAsync();
         var responseDto = _mapper.Map<CustomersDto>(customerEntity);
         return responseDto;
     }
 
-    public IEnumerable<CustomersDto> GetAllCustomers(bool trackChanges)
+    public async Task<IEnumerable<CustomersDto>?> GetAllCustomers(bool trackChanges)
     {
-            var customers = _repository.Customer.GetAllCustomers(trackChanges);
+            var customers = await _repository.Customer.GetAllCustomers(trackChanges);
             var dto = _mapper.Map<IEnumerable<CustomersDto>>(customers);
             return dto;
     }
 
-    public CustomersDto GetCustomer(Guid customerId, bool trackChanges)
+    public async Task<CustomersDto?> GetCustomer(Guid customerId, bool trackChanges)
     {
-        var customer = _repository.Customer.GetCustomer(customerId, trackChanges);
+        var customer = await _repository.Customer.GetCustomer(customerId, trackChanges);
         if (customer == null)
         {
             throw new CustomerNotFoundException(customerId);
