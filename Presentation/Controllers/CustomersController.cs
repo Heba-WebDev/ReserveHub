@@ -11,27 +11,27 @@ public class CustomersController : ControllerBase
     public CustomersController(IServiceManager service) => _service = service;
 
     [HttpPost]
-    public IActionResult CreateCustomer([FromBody] CreateCustomerRequestDto customer)
+    public async Task<IActionResult> CreateCustomer([FromBody] CreateCustomerRequestDto customer)
     {
         if (customer is null)
             return BadRequest("Request body can not be empty");
 
-        var createdCustomer = _service.CustomerService.CreateCustomer(customer);
+        var createdCustomer = await _service.CustomerService.CreateCustomer(customer);
 
-        return CreatedAtRoute("CustomerById", new { id = createdCustomer.Id }, createdCustomer);
+        return CreatedAtRoute("CustomerById", new { id = createdCustomer!.Id }, createdCustomer);
     }
 
     [HttpGet]
-    public IActionResult GetCustomers()
+    public async Task<IActionResult> GetCustomers()
     {
-        var customers = _service.CustomerService.GetAllCustomers(trackChanges: false);
+        var customers = await _service.CustomerService.GetAllCustomers(trackChanges: false);
             return Ok(customers);
     }
 
     [HttpGet("{id:guid}", Name = "CustomerById")]
-    public IActionResult GetCustomer(Guid id)
+    public async Task<IActionResult> GetCustomer(Guid id)
     {
-        var customer = _service.CustomerService.GetCustomer(id, trackChanges: false);
+        var customer = await _service.CustomerService.GetCustomer(id, trackChanges: false);
         return Ok(customer);
     }
 }
