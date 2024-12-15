@@ -28,23 +28,25 @@ public class UserService : IUserService
 
     public async Task<UserDto> GetUserById(Guid userId, bool trackChanges)
     {
-        var user = await _repository.User.GetUser(userId, trackChanges);
-        if (user == null)
-        {
-            throw new UserNotFoundException(userId);
-        }
+        var user = await GetUserAndCheckIfItExists(userId, trackChanges);
         var response_dto = _mapper.Map<UserDto>(user);
         return response_dto;
     }
 
     public async Task UpdateUser(Guid userId, UpdateUserRequestDto user, bool trackChanges)
     {
-        var entity = await _repository.User.GetUser(userId, trackChanges);
-        if (entity is null)
+        var entity = await GetUserAndCheckIfItExists(userId, trackChanges);
+        _mapper.Map(user, entity);
+        await _repository.SaveAsync();
+    }
+
+    private async Task<User?> GetUserAndCheckIfItExists(Guid userId, bool trackChanges)
+    {
+        var user = await _repository.User.GetUser(userId, trackChanges);
+        if (user is null)
         {
             throw new UserNotFoundException(userId);
         }
-        _mapper.Map(user, entity);
-        await _repository.SaveAsync();
+        return user;
     }
 }
