@@ -1,6 +1,8 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Shared.RequestFeatures;
 namespace Presentation.Controllers;
 
 [Route("api/customers")]
@@ -22,10 +24,16 @@ public class CustomersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetCustomers()
+    public async Task<IActionResult> GetCustomers([FromQuery] CustomerParameters customerParameters)
     {
-        var customers = await _service.CustomerService.GetAllCustomers(trackChanges: false);
-            return Ok(customers);
+        var (customers, metaData) = await _service.CustomerService.GetAllCustomers(customerParameters, trackChanges: false);
+        var paginationHeader = JsonSerializer.Serialize(metaData);
+        Response.Headers.Add("X-Pagination", paginationHeader);
+        return Ok(new
+        {
+            Customers = customers,
+            MetaData = metaData
+        });
     }
 
     [HttpGet("{id:guid}", Name = "CustomerById")]
