@@ -1,9 +1,10 @@
 using Entities.Models;
+using Shared.RequestFeatures;
 namespace Contracts.Repositories;
 
 public interface ICustomer
 {
-    Task<IEnumerable<Customer>?> GetAllCustomers(bool trackChanges);
+    Task<PagedList<Customer>?> GetAllCustomers(CustomerParameters customerParameters, bool trackChanges);
     Task<Customer?> GetCustomer(Guid customerId, bool trackChanges);
     void CreateCustomer(Customer customer);
 }
