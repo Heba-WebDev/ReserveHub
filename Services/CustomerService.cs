@@ -4,6 +4,7 @@ using Entities.Exceptions;
 using Entities.Models;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Shared.RequestFeatures;
 namespace Services;
 
 internal sealed class CustomerService : ICustomerService
@@ -26,11 +27,11 @@ internal sealed class CustomerService : ICustomerService
         return responseDto;
     }
 
-    public async Task<IEnumerable<CustomersDto>?> GetAllCustomers(bool trackChanges)
+    public async Task<(IEnumerable<CustomersDto>? customers, MetaData metaData)> GetAllCustomers(CustomerParameters customerParameters, bool trackChanges)
     {
-            var customers = await _repository.Customer.GetAllCustomers(trackChanges);
+            var customers = await _repository.Customer.GetAllCustomers(customerParameters, trackChanges);
             var dto = _mapper.Map<IEnumerable<CustomersDto>>(customers);
-            return dto;
+            return (dto, customers!.MetaData);
     }
 
     public async Task<CustomersDto?> GetCustomer(Guid customerId, bool trackChanges)
