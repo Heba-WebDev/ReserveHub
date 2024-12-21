@@ -18,6 +18,16 @@ public class RepositoryContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
+    modelBuilder.Entity<Room>()
+        .Property(x => x.Type)
+        .HasConversion<string>()
+        .IsRequired();
+
+    modelBuilder.Entity<Room>()
+        .Property(x => x.Status)
+        .HasConversion<string>()
+        .IsRequired();
+
     modelBuilder.Entity<RoomAmenity>()
         .HasKey(x => x.Id);
 
@@ -32,6 +42,7 @@ public class RepositoryContext : DbContext
         .HasForeignKey(x => x.AmenityId);
 
     modelBuilder.ApplyConfiguration(new CustomerConfiguration());
+    modelBuilder.ApplyConfiguration(new RoomConfiguration());
 }
 
 }
