@@ -1,6 +1,7 @@
 using AutoMapper;
 using Entities.Models;
 using Shared.DataTransferObjects;
+using Shared.DataTransferObjects.Rooms;
 using Shared.DataTransferObjects.Users;
 namespace API;
 
@@ -20,5 +21,7 @@ public class MappingProfile : Profile
         CreateMap<CreateUserRequestDto, User>();
         CreateMap<UpdateUserRequestDto, User>() //ignores the null values of the dto
             .ForAllMembers(opts => opts.Condition((src, dest, scrMember) => scrMember != null));
+        CreateMap<CreateRoomRequestDto, Room>();
+        CreateMap<Room, RoomResponseDto>();
     }
 }
