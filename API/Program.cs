@@ -18,7 +18,11 @@ builder.Services.AddControllers(config => {
     config.ReturnHttpNotAcceptable = true;
 }).AddXmlDataContractSerializerFormatters()
 .AddCustomCSVFormatter()
-.AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly);
+.AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly)
+.AddJsonOptions((options) =>
+{
+    options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+});
 builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
 builder.Services.AddEndpointsApiExplorer();

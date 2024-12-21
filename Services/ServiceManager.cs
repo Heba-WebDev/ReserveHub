@@ -15,7 +15,7 @@ public class ServiceManager : IServiceManager
     {
         _usersService = new Lazy<IUserService>(() => new UserService(repositoryManager, mapper));
         _customersService = new Lazy<ICustomerService>(() => new CustomerService(repositoryManager, mapper));
-        _roomService = new Lazy<IRoomService>(() => new RoomService(repositoryManager));
+        _roomService = new Lazy<IRoomService>(() => new RoomService(repositoryManager, mapper));
         _reservationService = new Lazy<IRservationService>(() => new ReservationService(repositoryManager));
         _amenityService = new Lazy<IAmenityService>(() => new AmenityService(repositoryManager));
         _roomAmenityService = new Lazy<IRoomAmenityService>(() => new RoomAmenityService(repositoryManager));
