@@ -1,7 +1,9 @@
 using AutoMapper;
 using Contracts.Repositories;
+using Entities.Exceptions;
 using Service.Contracts;
 using Shared.DataTransferObjects.Rooms;
+using Shared.RequestFeatures;
 namespace Services;
 
 internal sealed class RoomService : IRoomService
@@ -22,5 +24,14 @@ internal sealed class RoomService : IRoomService
         await _repository.SaveAsync();
         var responseDto = _mapper.Map<RoomResponseDto>(roomEntity);
         return responseDto;
+    }
+
+    public async Task<(IEnumerable<RoomResponseDto>? rooms, MetaData metaData)> GetAllRooms(RoomParameters roomParameters, bool trackChanges)
+    {
+        if (roomParameters.FloorNumber.HasValue && !roomParameters.ValidFloorNumber)
+            throw new FloorNotFoundException(roomParameters.FloorNumber);
+        var rooms = await _repository.Room.GetAllRooms(roomParameters, trackChanges);
+        var dto = _mapper.Map<IEnumerable<RoomResponseDto>>(rooms);
+        return (dto, rooms.MetaData);
     }
 }
