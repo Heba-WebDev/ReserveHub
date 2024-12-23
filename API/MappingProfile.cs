@@ -3,6 +3,7 @@ using Entities.Models;
 using Shared.DataTransferObjects;
 using Shared.DataTransferObjects.Rooms;
 using Shared.DataTransferObjects.Users;
+using Shared.RequestFeatures;
 namespace API;
 
 public class MappingProfile : Profile
@@ -22,6 +23,24 @@ public class MappingProfile : Profile
         CreateMap<UpdateUserRequestDto, User>() //ignores the null values of the dto
             .ForAllMembers(opts => opts.Condition((src, dest, scrMember) => scrMember != null));
         CreateMap<CreateRoomRequestDto, Room>();
-        CreateMap<Room, RoomResponseDto>();
+        CreateMap<PagedList<Room>, IEnumerable<RoomResponseDto>>()
+            .ConvertUsing(list => list.Select(room => new RoomResponseDto
+            {
+                Id = room.Id,
+                Floor = room.Floor,
+                Number = room.Number,
+                RoomType = room.Type,
+                RoomStatus = room.Status,
+                Price_Per_Night = room.Price_Per_Night
+            }));
+        CreateMap<Room, RoomResponseDto>()
+            .ForMember(dest => dest.RoomType, opt =>
+            {
+                opt.MapFrom(src => src.Type.ToString());
+            })
+            .ForMember(dest => dest.RoomStatus, opt =>
+            {
+                opt.MapFrom(src => src.Type.ToString());
+            });
     }
 }
