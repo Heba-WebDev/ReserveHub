@@ -36,11 +36,11 @@ public class MappingProfile : Profile
         CreateMap<Room, RoomResponseDto>()
             .ForMember(dest => dest.RoomType, opt =>
             {
-                opt.MapFrom(src => src.Type.ToString());
+                opt.MapFrom(src => src.Type);
             })
             .ForMember(dest => dest.RoomStatus, opt =>
             {
-                opt.MapFrom(src => src.Type.ToString());
+                opt.MapFrom(src => src.Type);
             });
     }
 }

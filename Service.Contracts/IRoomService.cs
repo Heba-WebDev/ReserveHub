@@ -7,4 +7,5 @@ public interface IRoomService
 {
     Task<RoomResponseDto> CreateRoom(CreateRoomRequestDto createRoomRequestDto);
     Task<(IEnumerable<RoomResponseDto>? rooms, MetaData metaData)> GetAllRooms(RoomParameters roomParameters, bool trackChanges);
+    Task<RoomResponseDto> GetRoomById(Guid roomId, bool trackChanges);
 }

@@ -31,4 +31,11 @@ public class RoomController : ControllerBase
             MetaData = metaData
         });
     }
+
+    [HttpGet("{roomId:guid}")]
+    public async Task<IActionResult> GetRoomById(Guid roomId)
+    {
+        var room = await _service.RoomService.GetRoomById(roomId, trackChanges: false);
+        return Ok(room);
+    }
 }
