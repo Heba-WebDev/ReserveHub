@@ -34,4 +34,11 @@ internal sealed class RoomService : IRoomService
         var dto = _mapper.Map<IEnumerable<RoomResponseDto>>(rooms);
         return (dto, rooms.MetaData);
     }
+
+    public async Task<RoomResponseDto> GetRoomById(Guid roomId, bool trackChanges)
+    {
+        var roomEntity = await _repository.Room.GetRoomById(roomId, trackChanges);
+        var dto = _mapper.Map<RoomResponseDto>(roomEntity);
+        return dto;
+    }
 }
