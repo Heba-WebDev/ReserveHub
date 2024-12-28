@@ -27,4 +27,9 @@ public class RoomRepository : RepositoryBase<Room>, IRoom
             .ToListAsync();
         return PagedList<Room>.ToPagedList(rooms, totalRoom, roomParameters.PageNumber, roomParameters.PageSize);
     }
+
+    public async Task<Room?> GetRoomById(Guid roomId, bool trackChanges)
+    {
+        return await FindByCondition(x => x.Id.Equals(roomId), trackChanges).SingleOrDefaultAsync();
+    }
 }
