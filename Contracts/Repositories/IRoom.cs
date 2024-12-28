@@ -6,4 +6,5 @@ public interface IRoom
 {
     void CreateRoom(Room room);
     Task<PagedList<Room>> GetAllRooms(RoomParameters roomParameters, bool trackChanges);
+    Task<Room?> GetRoomById(Guid roomId, bool trackChanges);
 }
