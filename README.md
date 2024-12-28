@@ -11,7 +11,7 @@ Welcome to ReserveHub! This is a web application for hotel management that allow
 - Amenity Selection: Choose from a variety of hotel amenities for customized stay and enhanced experience.
 - Reservation History: Keep track of past and upcoming reservations.
 
-## Technology
+## Technologies
 
 <p>
   <a href="https://skillicons.dev">
