@@ -2,6 +2,7 @@ using Contracts.Repositories;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
 using Shared.RequestFeatures;
+using Repositories.Extensions;
 namespace Repositories;
 
 public class CustomerRepository : RepositoryBase<Customer>, ICustomer
@@ -13,6 +14,7 @@ public class CustomerRepository : RepositoryBase<Customer>, ICustomer
     {
         var totalCustomers = await FindAll(trackChanges).CountAsync();
         var customers = await FindAll(trackChanges)
+        .Search(customerParameters.SearchTerm!)
         .OrderBy(x => x.FirstName)
         .Skip((customerParameters.PageNumber - 1) * customerParameters.PageSize)
         .Take(customerParameters.PageSize)
