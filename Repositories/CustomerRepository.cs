@@ -15,7 +15,7 @@ public class CustomerRepository : RepositoryBase<Customer>, ICustomer
         var totalCustomers = await FindAll(trackChanges).CountAsync();
         var customers = await FindAll(trackChanges)
         .Search(customerParameters.SearchTerm!)
-        .OrderBy(x => x.FirstName)
+        .Sort(customerParameters.OrderBy!)
         .Skip((customerParameters.PageNumber - 1) * customerParameters.PageSize)
         .Take(customerParameters.PageSize)
         .ToListAsync();
