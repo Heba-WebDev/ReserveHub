@@ -2,6 +2,7 @@ using AutoMapper;
 using Contracts;
 using Contracts.Repositories;
 using Service.Contracts;
+using Shared.DataTransferObjects;
 namespace Services;
 public class ServiceManager : IServiceManager
 {
@@ -11,10 +12,10 @@ public class ServiceManager : IServiceManager
     private readonly Lazy<IRservationService> _reservationService;
     private readonly Lazy<IAmenityService> _amenityService;
     private readonly Lazy<IRoomAmenityService> _roomAmenityService;
-    public ServiceManager(IRepositoryManager repositoryManager, IMapper mapper)
+    public ServiceManager(IRepositoryManager repositoryManager, IMapper mapper, IDataShaper<CustomersDto> dataShaper)
     {
         _usersService = new Lazy<IUserService>(() => new UserService(repositoryManager, mapper));
-        _customersService = new Lazy<ICustomerService>(() => new CustomerService(repositoryManager, mapper));
+        _customersService = new Lazy<ICustomerService>(() => new CustomerService(repositoryManager, mapper, dataShaper));
         _roomService = new Lazy<IRoomService>(() => new RoomService(repositoryManager, mapper));
         _reservationService = new Lazy<IRservationService>(() => new ReservationService(repositoryManager));
         _amenityService = new Lazy<IAmenityService>(() => new AmenityService(repositoryManager));

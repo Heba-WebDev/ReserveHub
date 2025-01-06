@@ -21,7 +21,7 @@ public static class OrderQueryBuilder
             if (objectProperty == null)
                 continue;
             var direction = param.EndsWith(" desc") ? "descending" : "ascending";
-            orderQueryBuilder.Append($"{objectProperty.Name.ToString()}{direction}, ");
+            orderQueryBuilder.Append($"{objectProperty.Name} {direction}, ");
         }
         var orderQuery = orderQueryBuilder.ToString().TrimEnd(',', ' ');
         return orderQuery;

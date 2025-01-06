@@ -1,4 +1,6 @@
+using System.Dynamic;
 using AutoMapper;
+using Contracts;
 using Contracts.Repositories;
 using Entities.Exceptions;
 using Entities.Models;
@@ -11,11 +13,13 @@ internal sealed class CustomerService : ICustomerService
 {
     private readonly IRepositoryManager _repository;
     private readonly IMapper _mapper;
+    private readonly IDataShaper<CustomersDto> _dataShaper;
 
-    public CustomerService(IRepositoryManager repository, IMapper mapper)
+    public CustomerService(IRepositoryManager repository, IMapper mapper, IDataShaper<CustomersDto> dataShaper)
     {
         _repository = repository;
         _mapper = mapper;
+        _dataShaper = dataShaper;
     }
 
     public async Task<CustomersDto?> CreateCustomer(CreateCustomerRequestDto customer)
@@ -27,11 +31,12 @@ internal sealed class CustomerService : ICustomerService
         return responseDto;
     }
 
-    public async Task<(IEnumerable<CustomersDto>? customers, MetaData metaData)> GetAllCustomers(CustomerParameters customerParameters, bool trackChanges)
+    public async Task<(IEnumerable<ExpandoObject>? customers, MetaData metaData)> GetAllCustomers(CustomerParameters customerParameters, bool trackChanges)
     {
             var customers = await _repository.Customer.GetAllCustomers(customerParameters, trackChanges);
             var dto = _mapper.Map<IEnumerable<CustomersDto>>(customers);
-            return (dto, customers!.MetaData);
+            var shapedData = _dataShaper.ShapeData(dto, customerParameters.Fields!);
+            return (customers: shapedData, customers!.MetaData);
     }
 
     public async Task<CustomersDto?> GetCustomer(Guid customerId, bool trackChanges)
