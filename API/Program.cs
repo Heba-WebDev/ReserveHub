@@ -1,7 +1,10 @@
 using API.Extensions;
+using Contracts;
 using LoggerService;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Services.DataShaping;
+using Shared.DataTransferObjects;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.SerilogConfiguration();
@@ -9,6 +12,7 @@ builder.Services.ConfigurePostgreSqlContext(builder.Configuration);
 builder.Services.ConfigureRepositoryManager();
 builder.Services.ConfigureServiceManager();
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddScoped<IDataShaper<CustomersDto>, DataShaper<CustomersDto>>();
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
