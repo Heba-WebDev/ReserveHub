@@ -24,6 +24,7 @@ public class CustomersController : ControllerBase
     }
 
     [HttpGet]
+    [HttpHead]
     public async Task<IActionResult> GetCustomers([FromQuery] CustomerParameters customerParameters)
     {
         var (customers, metaData) = await _service.CustomerService.GetAllCustomers(customerParameters, trackChanges: false);
