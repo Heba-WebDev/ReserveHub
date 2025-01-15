@@ -42,4 +42,11 @@ public class CustomersController : ControllerBase
         var customer = await _service.CustomerService.GetCustomer(id, trackChanges: false);
         return Ok(customer);
     }
+
+    [HttpOptions]
+    public IActionResult GetCustomersOptions()
+    {
+        Response.Headers.Add("Allow", "GET, OPTIONS, POST");
+        return Ok();
+    }
 }
