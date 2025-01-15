@@ -5,6 +5,7 @@ using Shared.DataTransferObjects;
 using Shared.RequestFeatures;
 namespace Presentation.Controllers;
 
+
 [Route("api/customers")]
 [ApiController]
 public class CustomersController : ControllerBase
@@ -24,6 +25,7 @@ public class CustomersController : ControllerBase
     }
 
     [HttpGet]
+    [HttpHead]
     public async Task<IActionResult> GetCustomers([FromQuery] CustomerParameters customerParameters)
     {
         var (customers, metaData) = await _service.CustomerService.GetAllCustomers(customerParameters, trackChanges: false);
@@ -41,5 +43,12 @@ public class CustomersController : ControllerBase
     {
         var customer = await _service.CustomerService.GetCustomer(id, trackChanges: false);
         return Ok(customer);
+    }
+
+    [HttpOptions]
+    public IActionResult GetCustomersOptions()
+    {
+        Response.Headers.Add("Allow", "GET, OPTIONS, POST");
+        return Ok();
     }
 }
