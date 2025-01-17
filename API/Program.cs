@@ -28,6 +28,7 @@ builder.Services.AddControllers(config => {
     options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
 });
 builder.Services.ConfigureCors();
+builder.Services.ConfigureVersioning();
 builder.Services.ConfigureIISIntegration();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
