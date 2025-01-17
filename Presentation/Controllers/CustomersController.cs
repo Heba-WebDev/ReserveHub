@@ -1,12 +1,12 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
 using Shared.RequestFeatures;
 namespace Presentation.Controllers;
 
-
-[Route("api/customers")]
+[Route("api/v{v:apiversion}/customers")]
 [ApiController]
 public class CustomersController : ControllerBase
 {
@@ -30,7 +30,7 @@ public class CustomersController : ControllerBase
     {
         var (customers, metaData) = await _service.CustomerService.GetAllCustomers(customerParameters, trackChanges: false);
         var paginationHeader = JsonSerializer.Serialize(metaData);
-        Response.Headers.Add("X-Pagination", paginationHeader);
+        Response.Headers.Append("X-Pagination", paginationHeader);
         return Ok(new
         {
             Customers = customers,
@@ -48,7 +48,7 @@ public class CustomersController : ControllerBase
     [HttpOptions]
     public IActionResult GetCustomersOptions()
     {
-        Response.Headers.Add("Allow", "GET, OPTIONS, POST");
+        Response.Headers.Append("Allow", "GET, OPTIONS, POST");
         return Ok();
     }
 }

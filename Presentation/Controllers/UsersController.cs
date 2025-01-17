@@ -4,7 +4,7 @@ using Shared.DataTransferObjects;
 using Shared.DataTransferObjects.Users;
 namespace Presentation.Controllers;
 
-[Route("/api/users")]
+[Route("/api/v{v:apiversion}/users")]
 [ApiController]
 public class UsersController : ControllerBase
 {

@@ -1,11 +1,12 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects.Rooms;
 using Shared.RequestFeatures;
 namespace Presentation.Controllers;
 
-[Route("/api/rooms")]
+[Route("/api/v{v:apiversion}/rooms")]
 [ApiController]
 public class RoomController : ControllerBase
 {
@@ -24,7 +25,7 @@ public class RoomController : ControllerBase
     {
         var (rooms, metaData) = await _service.RoomService.GetAllRooms(roomParameters, trackChanges: false);
         var paginationHeader = JsonSerializer.Serialize(metaData);
-        Response.Headers.Add("X-Pagination", paginationHeader);
+        Response.Headers.Append("X-Pagination", paginationHeader);
         return Ok(new
         {
             Rooms = rooms,
