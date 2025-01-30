@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Service.Contracts;
 using Shared.DataTransferObjects.Rooms;
 using Shared.RequestFeatures;
@@ -8,6 +9,7 @@ namespace Presentation.Controllers;
 
 [Route("/api/v{v:apiversion}/rooms")]
 [ApiController]
+[EnableRateLimiting("Fixed")]
 public class RoomController : ControllerBase
 {
     private readonly IServiceManager _service;

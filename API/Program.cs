@@ -1,3 +1,4 @@
+using System.Threading.RateLimiting;
 using API.Extensions;
 using Contracts;
 using LoggerService;
@@ -28,6 +29,19 @@ builder.Services.AddControllers(config => {
     options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
 });
 builder.Services.ConfigureCors();
+builder.Services.AddRateLimiter( options => {
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy(policyName: "Fixed", httpContext => {
+        return RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(),
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 3,
+                Window = TimeSpan.FromMinutes(1),
+            }
+        );
+    });
+});
 builder.Services.ConfigureVersioning();
 builder.Services.ConfigureIISIntegration();
 builder.Services.AddEndpointsApiExplorer();
@@ -46,6 +60,7 @@ if (app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseRateLimiter();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseForwardedHeaders(new ForwardedHeadersOptions
