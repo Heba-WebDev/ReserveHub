@@ -1,0 +1,23 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+namespace Repositories.Configuration;
+
+public class RoleConfiguration : IEntityTypeConfiguration<IdentityRole>
+{
+    public void Configure(EntityTypeBuilder<IdentityRole> builder)
+    {
+        builder.HasData(
+            new IdentityRole
+            {
+                Name = "Customer",
+                NormalizedName = "Customer"
+            },
+            new IdentityRole
+            {
+                Name = "User",
+                NormalizedName = "USER"
+            }
+        );
+    }
+}
