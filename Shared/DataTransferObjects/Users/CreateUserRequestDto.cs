@@ -21,4 +21,5 @@ public class CreateUserRequestDto
     public string? PhoneNumber { get; set; }
 
     public string? Address { get; set; }
+    public ICollection<string>? Roles { get; init; }
 }
