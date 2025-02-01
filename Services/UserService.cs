@@ -2,6 +2,8 @@ using AutoMapper;
 using Contracts.Repositories;
 using Entities.Exceptions;
 using Entities.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Service.Contracts;
 using Shared.DataTransferObjects.Users;
 namespace Services;
@@ -10,20 +12,24 @@ public class UserService : IUserService
 {
     private readonly IRepositoryManager _repository;
     private readonly IMapper _mapper;
-    public UserService(IRepositoryManager repository, IMapper mapper)
+    private readonly UserManager<User> _userManager;
+    private readonly IConfiguration _configuration;
+    public UserService(IRepositoryManager repository, IMapper mapper, UserManager<User> userManager, IConfiguration configuration)
     {
         _repository = repository;
         _mapper = mapper;
+        _userManager = userManager;
+        _configuration = configuration;
     }
 
-    public async Task<UserDto> CreateUser(CreateUserRequestDto user)
+    public async Task<IdentityResult> CreateUser(CreateUserRequestDto user)
     {
         var userEntity = _mapper.Map<User>(user);
-        userEntity.Password = BCrypt.Net.BCrypt.HashPassword(userEntity.Password);
-        _repository.User.CreateUser(userEntity);
-        await _repository.SaveAsync();
-        var responseDto = _mapper.Map<UserDto>(userEntity);
-        return responseDto;
+        userEntity.UserName = user.Email;
+        var result = await _userManager.CreateAsync(userEntity, user.Password);
+        if (result.Succeeded)
+            await _userManager.AddToRolesAsync(userEntity, user.Roles!);
+        return result;
     }
 
     public async Task<UserDto> GetUserById(Guid userId, bool trackChanges)
