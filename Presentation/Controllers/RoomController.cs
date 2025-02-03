@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -23,6 +24,7 @@ public class RoomController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetAllRooms([FromQuery] RoomParameters roomParameters)
     {
         var (rooms, metaData) = await _service.RoomService.GetAllRooms(roomParameters, trackChanges: false);

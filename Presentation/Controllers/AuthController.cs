@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Shared.DataTransferObjects.Auth;
 using Shared.DataTransferObjects.Users;
 namespace Presentation.Controllers;
 
@@ -25,5 +26,17 @@ public class AuthController : ControllerBase
             return BadRequest(ModelState);
         }
         return StatusCode(201);
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginDto dto)
+    {
+        if (!await _service.UserService.ValidateUser(dto))
+            return Unauthorized();
+        return Ok(new
+        {
+            Token = await _service
+        .UserService.CreateToken()
+        });
     }
 }
