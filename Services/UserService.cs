@@ -4,14 +4,15 @@ using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
 using Contracts.Repositories;
+using Entities.ConfigurationModels;
 using Entities.Exceptions;
 using Entities.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Service.Contracts;
 using Shared.DataTransferObjects.Auth;
 using Shared.DataTransferObjects.Users;
+using Microsoft.Extensions.Options;
 namespace Services;
 
 public class UserService : IUserService
@@ -19,14 +20,16 @@ public class UserService : IUserService
     private readonly IRepositoryManager _repository;
     private readonly IMapper _mapper;
     private readonly UserManager<User> _userManager;
-    private readonly IConfiguration _configuration;
+    private readonly IOptions<JwtConfiguration> _configuration;
+    private readonly JwtConfiguration _jwtConfiguration;
     private User? _user;
-    public UserService(IRepositoryManager repository, IMapper mapper, UserManager<User> userManager, IConfiguration configuration)
+    public UserService(IRepositoryManager repository, IMapper mapper, UserManager<User> userManager, IOptions<JwtConfiguration> configuration)
     {
         _repository = repository;
         _mapper = mapper;
         _userManager = userManager;
         _configuration = configuration;
+        _jwtConfiguration = _configuration.Value;
     }
 
     public async Task<IdentityResult> CreateUser(CreateUserRequestDto user)
@@ -87,8 +90,7 @@ public class UserService : IUserService
     }
     private SigningCredentials GetSigningCredentials()
     {
-        var jwtSettings = _configuration.GetSection("JwtSettings");
-        var key = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!);
+        var key = Encoding.UTF8.GetBytes(_jwtConfiguration.SecretKey!);
         var secret = new SymmetricSecurityKey(key);
         return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
     }
@@ -110,13 +112,12 @@ public class UserService : IUserService
 
     private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
     {
-        var jwtSettings = _configuration.GetSection("JwtSettings");
         var tokenOptions = new JwtSecurityToken
         (
-        issuer: jwtSettings["validIssuer"],
-        audience: jwtSettings["validAudience"],
+        issuer: _jwtConfiguration.ValidIssuer,
+        audience: _jwtConfiguration.Validaudience,
         claims: claims,
-        expires: DateTime.Now.AddMinutes(Convert.ToDouble(jwtSettings["expires"])),
+        expires: DateTime.Now.AddMinutes(Convert.ToDouble(_jwtConfiguration.Expries)),
         signingCredentials: signingCredentials
         );
         return tokenOptions;
@@ -134,18 +135,17 @@ public class UserService : IUserService
 
     private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
     {
-        var jwtSettings = _configuration.GetSection("JwtSettings");
         var tokenValidationParameters = new TokenValidationParameters
         {
             ValidateAudience = true,
             ValidateIssuer = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!)
+                Encoding.UTF8.GetBytes(_jwtConfiguration.SecretKey!)
             ),
             ValidateLifetime = true,
-            ValidIssuer = jwtSettings["validIssuer"],
-            ValidAudience = jwtSettings["validAudience"]
+            ValidIssuer = _jwtConfiguration.ValidIssuer,
+            ValidAudience = _jwtConfiguration.Validaudience
         };
         var tokenHandler = new JwtSecurityTokenHandler();
         SecurityToken securityToken;
