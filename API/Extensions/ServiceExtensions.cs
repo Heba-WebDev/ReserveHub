@@ -9,6 +9,7 @@ using Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Entities.ConfigurationModels;
 namespace API.Extensions;
 public static class ServiceExtensions
 {
@@ -69,10 +70,13 @@ public static class ServiceExtensions
         .AddDefaultTokenProviders();
     }
 
+    public static void AddJwtConfiguration(this IServiceCollection services, IConfiguration configuration) =>
+        services.Configure<JwtConfiguration>(configuration.GetSection("JwtSettings")) ;
     public static void ConfigureJWT(this IServiceCollection services, IConfiguration
 configuration)
     {
-        var jwtSettings = configuration.GetSection("JwtSettings");
+        var jwtConfiguration = new JwtConfiguration();
+        configuration.Bind(jwtConfiguration.Section, jwtConfiguration);
         services.AddAuthentication(opt =>
         {
             opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -86,10 +90,10 @@ configuration)
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtSettings["validIssuer"],
-                ValidAudience = jwtSettings["validAudience"],
+                ValidIssuer = jwtConfiguration.ValidIssuer,
+                ValidAudience = jwtConfiguration.Validaudience,
                 IssuerSigningKey = new
-    SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!))
+    SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.SecretKey!))
             };
         });
     }

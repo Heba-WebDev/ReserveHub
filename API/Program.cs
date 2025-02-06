@@ -48,6 +48,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAuthentication();
 builder.Services.ConfigureIdentity();
+builder.Services.AddJwtConfiguration(builder.Configuration);
 builder.Services.ConfigureJWT(builder.Configuration);
 var app = builder.Build();
 app.ConfigureExceptionHandler();

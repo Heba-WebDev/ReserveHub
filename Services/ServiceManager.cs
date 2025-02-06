@@ -1,9 +1,11 @@
 using AutoMapper;
 using Contracts;
 using Contracts.Repositories;
+using Entities.ConfigurationModels;
 using Entities.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Service.Contracts;
 using Shared.DataTransferObjects;
 namespace Services;
@@ -15,7 +17,7 @@ public class ServiceManager : IServiceManager
     private readonly Lazy<IRservationService> _reservationService;
     private readonly Lazy<IAmenityService> _amenityService;
     private readonly Lazy<IRoomAmenityService> _roomAmenityService;
-    public ServiceManager(IRepositoryManager repositoryManager, IMapper mapper, IDataShaper<CustomersDto> dataShaper, IConfiguration configuration, UserManager<User> userManager)
+    public ServiceManager(IRepositoryManager repositoryManager, IMapper mapper, IDataShaper<CustomersDto> dataShaper, UserManager<User> userManager, IOptions<JwtConfiguration> configuration)
     {
         _usersService = new Lazy<IUserService>(() => new UserService(repositoryManager, mapper, userManager, configuration));
         _customersService = new Lazy<ICustomerService>(() => new CustomerService(repositoryManager, mapper, dataShaper));
