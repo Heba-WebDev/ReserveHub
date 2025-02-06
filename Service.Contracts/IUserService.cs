@@ -7,7 +7,8 @@ public interface IUserService
 {
     Task<IdentityResult> CreateUser(CreateUserRequestDto user);
     Task<bool> ValidateUser(LoginDto dto);
-    Task<string> CreateToken();
+    Task<TokenDto> CreateToken(bool populateExp);
+    Task<TokenDto> RefreshToken(TokenDto tokenDto);
     Task<UserDto> GetUserById(Guid userId, bool trackChanges);
     Task UpdateUser(Guid userId, UpdateUserRequestDto user, bool trackChanges);
 }

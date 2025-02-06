@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Service.Contracts;
-using Shared.DataTransferObjects;
 using Shared.DataTransferObjects.Auth;
 using Shared.DataTransferObjects.Users;
 namespace Presentation.Controllers;
@@ -13,7 +11,7 @@ public class AuthController : ControllerBase
     private readonly IServiceManager _service;
     public AuthController(IServiceManager service) => _service = service;
 
-    [HttpPost("/register")]
+    [HttpPost("register")]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserRequestDto user)
     {
         var result = await _service.UserService.CreateUser(user);
@@ -33,10 +31,7 @@ public class AuthController : ControllerBase
     {
         if (!await _service.UserService.ValidateUser(dto))
             return Unauthorized();
-        return Ok(new
-        {
-            Token = await _service
-        .UserService.CreateToken()
-        });
+        var tokenDto = await _service.UserService.CreateToken(populateExp: true);
+        return Ok(tokenDto);
     }
 }

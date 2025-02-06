@@ -17,6 +17,7 @@ public class RoomController : ControllerBase
     public RoomController(IServiceManager service) => _service = service;
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateRoom([FromBody] CreateRoomRequestDto createRoomRequestDto)
     {
         var createdRoom = await _service.RoomService.CreateRoom(createRoomRequestDto);
