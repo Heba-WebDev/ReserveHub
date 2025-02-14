@@ -32,16 +32,6 @@ public class UserService : IUserService
         _jwtConfiguration = _configuration.Value;
     }
 
-    public async Task<IdentityResult> CreateUser(CreateUserRequestDto user)
-    {
-        var userEntity = _mapper.Map<User>(user);
-        userEntity.UserName = user.Email;
-        var result = await _userManager.CreateAsync(userEntity, user.Password);
-        if (result.Succeeded)
-            await _userManager.AddToRolesAsync(userEntity, user.Roles!);
-        return result;
-    }
-
     public async Task<UserDto> GetUserById(Guid userId, bool trackChanges)
     {
         var user = await GetUserAndCheckIfItExists(userId, trackChanges);
@@ -64,104 +54,6 @@ public class UserService : IUserService
         return result;
     }
 
-    public async Task<TokenDto> CreateToken(bool populateExp)
-    {
-        var signingCredentials = GetSigningCredentials();
-        var claims = await GetClaims();
-        var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
-        var refreshToken = GenerateRefreshToken();
-        _user!.RefreshToken = refreshToken;
-        if (populateExp)
-            _user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-        await _userManager.UpdateAsync(_user);
-        var accessToken = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-        return new TokenDto(accessToken, refreshToken);
-    }
-
-    public async Task<TokenDto> RefreshToken(TokenDto tokenDto)
-    {
-        var principal = GetPrincipalFromExpiredToken(tokenDto.AccessToken);
-        var user = await _userManager.FindByNameAsync(principal.Identity!.Name!);
-        if (user == null || user.RefreshToken != tokenDto.RefreshToken
-            || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
-            throw new RefreshTokenBadRequest();
-        _user = user;
-        return await CreateToken(populateExp: false);
-    }
-    private SigningCredentials GetSigningCredentials()
-    {
-        var key = Encoding.UTF8.GetBytes(_jwtConfiguration.SecretKey!);
-        var secret = new SymmetricSecurityKey(key);
-        return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
-    }
-
-    private async Task<List<Claim>> GetClaims()
-    {
-        var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Email, _user!.Email!),
-            new Claim(ClaimTypes.Name, _user!.Email!)
-        };
-        var roles = await _userManager.GetRolesAsync(_user);
-        foreach (var role in roles)
-        {
-            claims.Add(new Claim(ClaimTypes.Role, role));
-        }
-        return claims;
-    }
-
-    private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
-    {
-        var tokenOptions = new JwtSecurityToken
-        (
-        issuer: _jwtConfiguration.ValidIssuer,
-        audience: _jwtConfiguration.Validaudience,
-        claims: claims,
-        expires: DateTime.Now.AddMinutes(Convert.ToDouble(_jwtConfiguration.Expries)),
-        signingCredentials: signingCredentials
-        );
-        return tokenOptions;
-    }
-
-    private string GenerateRefreshToken()
-    {
-        var randomNumber = new byte[32];
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(randomNumber);
-            return Convert.ToBase64String(randomNumber);
-        }
-    }
-
-    private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
-    {
-        var tokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateAudience = true,
-            ValidateIssuer = true,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_jwtConfiguration.SecretKey!)
-            ),
-            ValidateLifetime = true,
-            ValidIssuer = _jwtConfiguration.ValidIssuer,
-            ValidAudience = _jwtConfiguration.Validaudience
-        };
-        var tokenHandler = new JwtSecurityTokenHandler();
-        SecurityToken securityToken;
-        var principal = tokenHandler.ValidateToken(token,
-            tokenValidationParameters, out securityToken);
-        var jwtSecurityToken = securityToken as JwtSecurityToken;
-        if (jwtSecurityToken == null 
-            ||
-            !jwtSecurityToken.Header.Alg.Equals(
-                SecurityAlgorithms.HmacSha256,
-                    StringComparison.InvariantCultureIgnoreCase))
-        {
-            throw new SecurityTokenException("Invalid token");
-        }
-        return principal;
-    }
     private async Task<User?> GetUserAndCheckIfItExists(Guid userId, bool trackChanges)
     {
         var user = await _repository.User.GetUser(userId, trackChanges);

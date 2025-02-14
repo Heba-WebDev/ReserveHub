@@ -8,4 +8,6 @@ public record UserDto
     public string? Email { get; init; }
     public string? PhoneNumber { get; init; }
     public string? Address { get; init; }
+    public string? RefreshToken { get; init; }
+    public DateTime? RefreshTokenExpiryTime { get; set; }
 }
