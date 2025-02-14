@@ -12,18 +12,10 @@ public class AuthController : ControllerBase
     public AuthController(IServiceManager service) => _service = service;
 
     [HttpPost("register")]
-    public async Task<IActionResult> CreateUser([FromBody] CreateUserRequestDto user)
+    public async Task<IActionResult> CreateUser([FromBody] RegisterDto dto)
     {
-        var result = await _service.UserService.CreateUser(user);
-        if (!result.Succeeded)
-        {
-            foreach (var error in result.Errors)
-            {
-                ModelState.TryAddModelError(error.Code, error.Description);
-            }
-            return BadRequest(ModelState);
-        }
-        return StatusCode(201);
+        var result = await _service.AuthService.Register(dto);
+        return Ok(result);
     }
 
     [HttpPost("login")]
@@ -31,7 +23,14 @@ public class AuthController : ControllerBase
     {
         if (!await _service.UserService.ValidateUser(dto))
             return Unauthorized();
-        var tokenDto = await _service.UserService.CreateToken(populateExp: true);
+        var tokenDto = await _service.AuthService.Login(dto, populateExp: true);
         return Ok(tokenDto);
+    }
+
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> Refresh([FromBody] TokenDto tokenDto)
+    {
+        var tokenDtoToReturn = await _service.AuthService.RefreshToken(tokenDto);
+        return Ok(tokenDtoToReturn);
     }
 }
