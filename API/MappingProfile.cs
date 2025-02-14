@@ -1,6 +1,7 @@
 using AutoMapper;
 using Entities.Models;
 using Shared.DataTransferObjects;
+using Shared.DataTransferObjects.Auth;
 using Shared.DataTransferObjects.Rooms;
 using Shared.DataTransferObjects.Users;
 using Shared.RequestFeatures;
@@ -19,7 +20,7 @@ public class MappingProfile : Profile
 
         CreateMap<CreateCustomerRequestDto, Customer>();
         CreateMap<User, UserDto>();
-        CreateMap<CreateUserRequestDto, User>();
+        CreateMap<RegisterDto, User>();
         CreateMap<UpdateUserRequestDto, User>() //ignores the null values of the dto
             .ForAllMembers(opts => opts.Condition((src, dest, scrMember) => scrMember != null));
         CreateMap<CreateRoomRequestDto, Room>();
