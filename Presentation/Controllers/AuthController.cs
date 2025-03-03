@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects.Auth;
-using Shared.DataTransferObjects.Users;
 namespace Presentation.Controllers;
 
 [Route("/api/v1/auth")]
