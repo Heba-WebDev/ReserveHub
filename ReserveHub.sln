@@ -3,6 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReserveHub.API", "ReserveHub.API\ReserveHub.API.csproj", "{EC550EAB-BDA9-4108-883E-E3699D975190}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReserveHub.Infrastructure", "ReserveHub.Infrastructure\ReserveHub.Infrastructure.csproj", "{37C3857C-1D9D-4060-9A3F-F242D5D11CA2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReserveHub.Domain", "ReserveHub.Domain\ReserveHub.Domain.csproj", "{80664E55-30FD-4025-B594-C4121AB8E69C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReserveHub.Application", "ReserveHub.Application\ReserveHub.Application.csproj", "{6AAA1747-CBC6-44D5-863C-A8458CFBF335}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -10,5 +18,23 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EC550EAB-BDA9-4108-883E-E3699D975190}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC550EAB-BDA9-4108-883E-E3699D975190}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC550EAB-BDA9-4108-883E-E3699D975190}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC550EAB-BDA9-4108-883E-E3699D975190}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37C3857C-1D9D-4060-9A3F-F242D5D11CA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37C3857C-1D9D-4060-9A3F-F242D5D11CA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37C3857C-1D9D-4060-9A3F-F242D5D11CA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37C3857C-1D9D-4060-9A3F-F242D5D11CA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80664E55-30FD-4025-B594-C4121AB8E69C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80664E55-30FD-4025-B594-C4121AB8E69C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80664E55-30FD-4025-B594-C4121AB8E69C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80664E55-30FD-4025-B594-C4121AB8E69C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AAA1747-CBC6-44D5-863C-A8458CFBF335}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AAA1747-CBC6-44D5-863C-A8458CFBF335}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AAA1747-CBC6-44D5-863C-A8458CFBF335}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AAA1747-CBC6-44D5-863C-A8458CFBF335}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
