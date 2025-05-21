@@ -380,3 +380,6 @@ appsettings.*.json
 
 #env files
 .envrc
+
+# Migration files
+Migrations
