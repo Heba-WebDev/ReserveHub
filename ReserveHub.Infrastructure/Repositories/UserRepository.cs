@@ -3,7 +3,7 @@ using ReserveHub.Domain.Repositories;
 using ReserveHub.Infrastructure.Identity;
 namespace ReserveHub.Infrastructure.Repositories;
 
-class UserRepository : RepositoryBase<ApplicationUser>, IRepositoryUser
+public class UserRepository : RepositoryBase<ApplicationUser>, IRepositoryUser
 {
     public UserRepository(RepositoryContext repositoryContext): base(repositoryContext)
     {}
