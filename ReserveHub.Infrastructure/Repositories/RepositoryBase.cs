@@ -9,14 +9,20 @@ public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
     protected RepositoryContext RepositoryContext;
     public RepositoryBase(RepositoryContext repositoryContext)
         => RepositoryContext = repositoryContext;
-    public void Create(T entity) =>
-        RepositoryContext.Set<T>().Add(entity);
+    public async Task Create(T entity) =>
+        await RepositoryContext.Set<T>().AddAsync(entity);
 
-    public void Update(T entity) =>
+    public async Task Update(T entity)
+    {
         RepositoryContext.Set<T>().Update(entity);
+        await Task.CompletedTask;
+    }
 
-    public void Delete(T entity) =>
+    public async Task Delete(T entity)
+    {
         RepositoryContext.Set<T>().Remove(entity);
+        await Task.CompletedTask;
+    }
 
     public IQueryable<T> FindAll(bool trackChanges) =>
         !trackChanges ?
