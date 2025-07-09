@@ -2,7 +2,7 @@ using ReserveHub.Domain.Entities;
 using ReserveHub.Domain.Repositories;
 namespace ReserveHub.Infrastructure.Repositories;
 
-class RoomRepository : RepositoryBase<Room>, IRepositoryRoom
+public class RoomRepository : RepositoryBase<Room>, IRepositoryRoom
 {
     public RoomRepository(RepositoryContext repositoryContext) : base(repositoryContext)
     { }
