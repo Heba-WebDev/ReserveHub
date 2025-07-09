@@ -1,7 +1,6 @@
-
 using ReserveHub.Domain.Entities;
 using ReserveHub.Domain.Repositories;
-using ReserveHub.Infrastructure.Repositories;
+namespace ReserveHub.Infrastructure.Repositories;
 
 class RoomRepository : RepositoryBase<Room>, IRepositoryRoom
 {
