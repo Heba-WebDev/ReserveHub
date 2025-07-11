@@ -1,0 +1,25 @@
+services:
+  reservehub-api:
+    build: .
+    ports:
+      - "5133:5133"
+    networks:
+      - reserve_net
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest
+    env_file: .env
+    ports:
+      - "5433:5432"
+    networks:
+      - reserve_net
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+networks:
+  reserve_net:
+
+volumes:
+  postgres_data:
