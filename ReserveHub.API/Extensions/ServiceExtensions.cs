@@ -1,5 +1,10 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using ReserveHub.Application.Services.Contracts;
+using ReserveHub.Domain.Entities;
+using ReserveHub.Domain.Repositories;
 using ReserveHub.Infrastructure.Repositories;
+using ReserveHub.Infrastructure.Services;
 
 namespace ReserveHub.API.Extensions;
 
@@ -10,4 +15,29 @@ public static class ServiceExtensions
         {
             opts.UseNpgsql(configuration.GetConnectionString("Default"));
         });
+
+    public static void ConfigureRepositoryManager(this IServiceCollection services)
+    {
+        services.AddScoped<IRepositoryManager, RepositoryManager>();
+    }
+
+    public static void ConfigureServiceManager(this IServiceCollection services)
+    {
+        services.AddScoped<IServiceManager, ServiceManager>();
+    }
+
+    public static void ConfigureIdentity(this IServiceCollection services)
+    {
+        var builder = services.AddIdentity<User, IdentityRole>(opt =>
+        {
+            opt.Password.RequireDigit = true;
+            opt.Password.RequireLowercase = false;
+            opt.Password.RequireUppercase = false;
+            opt.Password.RequireNonAlphanumeric = false;
+            opt.Password.RequiredLength = 10;
+            opt.User.RequireUniqueEmail = true;
+        })
+        .AddEntityFrameworkStores<RepositoryContext>()
+        .AddDefaultTokenProviders();
+    }
 }
