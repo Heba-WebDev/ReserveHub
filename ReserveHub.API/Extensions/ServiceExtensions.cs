@@ -32,10 +32,10 @@ public static class ServiceExtensions
         var builder = services.AddIdentity<ApplicationUser, IdentityRole>(opt =>
         {
             opt.Password.RequireDigit = true;
-            opt.Password.RequireLowercase = false;
-            opt.Password.RequireUppercase = false;
-            opt.Password.RequireNonAlphanumeric = false;
-            opt.Password.RequiredLength = 10;
+            opt.Password.RequireLowercase = true;
+            opt.Password.RequireUppercase = true;
+            opt.Password.RequireNonAlphanumeric = true;
+            opt.Password.RequiredLength = 8;
             opt.User.RequireUniqueEmail = true;
         })
         .AddEntityFrameworkStores<RepositoryContext>()
