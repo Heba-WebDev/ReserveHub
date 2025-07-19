@@ -7,17 +7,18 @@ using ReserveHub.Application.Services.Contracts;
 using ReserveHub.Domain.Entities;
 using ReserveHub.Domain.Repositories;
 using ReserveHub.Infrastructure.Configurations;
+using ReserveHub.Infrastructure.Identity;
 namespace ReserveHub.Infrastructure.Services;
 
 public class AuthService : IAuthService
 {
     public readonly IRepositoryManager _repository;
     public readonly IMapper _mapper;
-    private readonly UserManager<User> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly IOptions<JwtConfiguration> _configuration;
     private readonly JwtConfiguration _jwtConfiguration;
     private User? _user;
-    public AuthService(IRepositoryManager repository, IMapper mapper, UserManager<User> userManager, IOptions<JwtConfiguration> configuration)
+    public AuthService(IRepositoryManager repository, IMapper mapper, UserManager<ApplicationUser> userManager, IOptions<JwtConfiguration> configuration)
     {
         _repository = repository;
         _mapper = mapper;
@@ -28,7 +29,8 @@ public class AuthService : IAuthService
 
     public async Task<BasedResponseDto> Register(RegisterDto dto)
     {
-        var user = _mapper.Map<User>(dto);
+        var user = _mapper.Map<ApplicationUser>(dto);
+        user.UserName = dto.Email;
         var result = await _userManager.CreateAsync(user, dto.Password);
 
         if (!result.Succeeded)

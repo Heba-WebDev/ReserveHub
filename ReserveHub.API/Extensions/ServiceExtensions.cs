@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ReserveHub.Application.Services.Contracts;
 using ReserveHub.Domain.Entities;
 using ReserveHub.Domain.Repositories;
+using ReserveHub.Infrastructure.Identity;
 using ReserveHub.Infrastructure.Repositories;
 using ReserveHub.Infrastructure.Services;
 
@@ -28,7 +29,7 @@ public static class ServiceExtensions
 
     public static void ConfigureIdentity(this IServiceCollection services)
     {
-        var builder = services.AddIdentity<User, IdentityRole>(opt =>
+        var builder = services.AddIdentity<ApplicationUser, IdentityRole>(opt =>
         {
             opt.Password.RequireDigit = true;
             opt.Password.RequireLowercase = false;
