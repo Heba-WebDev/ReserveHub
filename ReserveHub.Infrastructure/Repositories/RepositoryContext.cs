@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ReserveHub.Domain.Entities;
+using ReserveHub.Infrastructure.Configurations;
 using ReserveHub.Infrastructure.Identity;
 namespace ReserveHub.Infrastructure.Repositories;
 
@@ -36,5 +37,7 @@ public class RepositoryContext : IdentityDbContext
         .WithOne(x => x.Room)
         .HasForeignKey(x => x.RoomId)
         .OnDelete(DeleteBehavior.Cascade);
+
+        builder.ApplyConfiguration(new RoleConfiguration());
     }
 }
