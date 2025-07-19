@@ -8,11 +8,11 @@ namespace ReserveHub.API.Controllers;
 [Route("api/auth")]
 public class AuthController : ControllerBase
 {
-    private readonly IServiceManager _manger;
+    private readonly IServiceManager _manager;
 
     public AuthController(IServiceManager manager)
     {
-        _manger = manager;
+        _manager = manager;
     }
 
     [HttpPost("register")]
@@ -23,7 +23,7 @@ public class AuthController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var result = await _manger.AuthService.Register(dto);
+        var result = await _manager.AuthService.Register(dto);
         if (!result.Status)
             return StatusCode(StatusCodes.Status400BadRequest, result);
 
