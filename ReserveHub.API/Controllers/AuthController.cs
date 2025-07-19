@@ -16,7 +16,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(BasedResponseDto))]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(BaseResponseDto))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Register(RegisterDto dto)
     {

@@ -4,7 +4,7 @@ namespace ReserveHub.Application.Services.Contracts;
 
 public interface IAuthService
 {
-    Task<BasedResponseDto> Register(RegisterDto dto);
-    Task<BasedResponseDto> Login(LoginDto dto);
-    Task<BasedResponseDto> RefreshToken(TokenDto dto);
+    Task<BaseResponseDto> Register(RegisterDto dto);
+    Task<BaseResponseDto> Login(LoginDto dto);
+    Task<BaseResponseDto> RefreshToken(TokenDto dto);
 }

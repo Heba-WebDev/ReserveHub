@@ -27,7 +27,7 @@ public class AuthService : IAuthService
         _jwtConfiguration = _configuration.Value;
     }
 
-    public async Task<BasedResponseDto> Register(RegisterDto dto)
+    public async Task<BaseResponseDto> Register(RegisterDto dto)
     {
         var user = _mapper.Map<ApplicationUser>(dto);
         user.UserName = dto.Email;
@@ -35,7 +35,7 @@ public class AuthService : IAuthService
 
         if (!result.Succeeded)
         {
-            return new BasedResponseDto()
+            return new BaseResponseDto()
             {
                 Status = false,
                 Message = "Registration failed",
@@ -45,19 +45,19 @@ public class AuthService : IAuthService
 
         await _userManager.AddToRoleAsync(user, "Customer");
 
-        return new BasedResponseDto()
+        return new BaseResponseDto()
         {
             Status = true,
             Message = "User successfully registered",
         };
     }
 
-    public Task<BasedResponseDto> Login(LoginDto dto)
+    public Task<BaseResponseDto> Login(LoginDto dto)
     {
         throw new NotImplementedException();
     }
 
-    public Task<BasedResponseDto> RefreshToken(TokenDto dto)
+    public Task<BaseResponseDto> RefreshToken(TokenDto dto)
     {
         throw new NotImplementedException();
     }

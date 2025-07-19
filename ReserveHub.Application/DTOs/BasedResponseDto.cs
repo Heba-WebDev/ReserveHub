@@ -1,6 +1,6 @@
 namespace ReserveHub.Application.DTOs;
 
-public class BasedResponseDto
+public class BaseResponseDto
 {
     public bool Status { get; set; }
     public string? Message { get; set; }
