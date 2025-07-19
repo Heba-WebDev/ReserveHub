@@ -1,12 +1,12 @@
 using AutoMapper;
 using ReserveHub.Application.DTOs.Auth;
-using ReserveHub.Domain.Entities;
-namespace ReserveHub.Application.Mappings;
+using ReserveHub.Infrastructure.Identity;
+namespace ReserveHub.Infrastructure.Mappings;
 
 public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<RegisterDto, User>();
+        CreateMap<RegisterDto, ApplicationUser>();
     }
 }
