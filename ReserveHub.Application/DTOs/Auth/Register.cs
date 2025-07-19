@@ -14,6 +14,8 @@ public class RegisterDto
     [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$",
         ErrorMessage = "Password must be at least 8 characters long, contain at least one letter, one number, and one special character")]
     public required string Password { get; set; }
-    public string? PhoneNumber { get; set; } = null;
-    public string? Address { get; set; } = string.Empty;
+    
+    [Phone(ErrorMessage = "Invalid phone number format")]
+    public string? PhoneNumber { get; set; }
+    public string? Address { get; set; }
 }
