@@ -23,7 +23,10 @@ app.UseRouting();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseRouting();
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 app.Run();
 
