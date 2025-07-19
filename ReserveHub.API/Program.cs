@@ -9,7 +9,7 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnC
 .AddJsonFile("appsettings.dev.json", optional: true, reloadOnChange: true)
 .AddEnvironmentVariables();
 builder.Services.AddAutoMapper(cfg => { }, typeof(MappingProfile).Assembly);
-builder.Services.ConfigurePostgresSqlContext(builder.Configuration);builder.Services.AddSwaggerGen();
+builder.Services.ConfigurePostgresSqlContext(builder.Configuration);
 builder.Services.ConfigureRepositoryManager();
 builder.Services.ConfigureServiceManager();
 builder.Services.AddEndpointsApiExplorer();
