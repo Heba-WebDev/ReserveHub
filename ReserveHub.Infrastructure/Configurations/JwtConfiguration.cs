@@ -6,5 +6,5 @@ public class JwtConfiguration
     public string? ValidIssuer { get; set; }
     public string? Validaudience { get; set; }
     public string? SecretKey { get; set; }
-    public string? Expries { get; set; }
+    public string? Expires { get; set; }
 }
