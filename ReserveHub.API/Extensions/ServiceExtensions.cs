@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ReserveHub.Application.Services.Contracts;
 using ReserveHub.Domain.Entities;
 using ReserveHub.Domain.Repositories;
+using ReserveHub.Infrastructure.Configurations;
 using ReserveHub.Infrastructure.Identity;
 using ReserveHub.Infrastructure.Repositories;
 using ReserveHub.Infrastructure.Services;
@@ -41,4 +42,7 @@ public static class ServiceExtensions
         .AddEntityFrameworkStores<RepositoryContext>()
         .AddDefaultTokenProviders();
     }
+
+    public static void AddJwtConfiguration(this IServiceCollection services, IConfiguration configuration) =>
+        services.Configure<JwtConfiguration>(configuration.GetSection("JwtSettings")) ;
 }
