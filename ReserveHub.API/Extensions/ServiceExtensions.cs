@@ -1,8 +1,12 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using ReserveHub.Application.Services.Contracts;
 using ReserveHub.Domain.Entities;
 using ReserveHub.Domain.Repositories;
+using ReserveHub.Infrastructure.Configurations;
 using ReserveHub.Infrastructure.Identity;
 using ReserveHub.Infrastructure.Repositories;
 using ReserveHub.Infrastructure.Services;
@@ -40,5 +44,43 @@ public static class ServiceExtensions
         })
         .AddEntityFrameworkStores<RepositoryContext>()
         .AddDefaultTokenProviders();
+    }
+
+    public static void AddJwtConfiguration(this IServiceCollection services, IConfiguration configuration) =>
+        services.Configure<JwtConfiguration>(configuration.GetSection("JwtSettings"));
+        
+    public static void ConfigureJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
+    {
+        var jwtConfiguration = configuration
+       .GetSection("JwtSettings")
+       .Get<JwtConfiguration>() ?? throw new InvalidOperationException("JwtSettings section is missing");
+
+        if (string.IsNullOrWhiteSpace(jwtConfiguration.SecretKey))
+            throw new InvalidOperationException("JWT SecretKey is not configured");
+        if (string.IsNullOrWhiteSpace(jwtConfiguration.ValidIssuer))
+            throw new InvalidOperationException("JWT ValidIssuer is not configured");
+        if (string.IsNullOrWhiteSpace(jwtConfiguration.ValidAudience))
+            throw new InvalidOperationException("JWT ValidAudience is not configured");
+
+        services.AddAuthentication(opt =>
+        {
+            opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }
+        )
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = jwtConfiguration.ValidIssuer,
+                ValidAudience = jwtConfiguration.ValidAudience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.SecretKey)),
+                ClockSkew = TimeSpan.Zero
+            };
+        });
     }
 }
