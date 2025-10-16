@@ -15,6 +15,7 @@ builder.Services.ConfigureRepositoryManager();
 builder.Services.ConfigureServiceManager();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddJwtConfiguration(builder.Configuration);
+builder.Services.ConfigureJwtAuthentication(builder.Configuration);
 builder.Services.ConfigureIdentity();
 builder.Services.AddSwaggerGen();
 
