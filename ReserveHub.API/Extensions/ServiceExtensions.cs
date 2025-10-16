@@ -61,7 +61,7 @@ public static class ServiceExtensions
         )
         .AddJwtBearer(options =>
         {
-            options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+            options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
