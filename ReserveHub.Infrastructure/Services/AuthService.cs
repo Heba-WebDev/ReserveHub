@@ -149,12 +149,15 @@ public class AuthService : IAuthService
 
     private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
     {
+        if (!int.TryParse(_jwtConfiguration.Expires, out var minutes) || minutes <= 0)
+            throw new InvalidOperationException("JWT Expires is not configured or invalid");
+
         return new JwtSecurityToken
         (
             issuer: _jwtConfiguration.ValidIssuer,
             audience: _jwtConfiguration.ValidAudience,
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(_jwtConfiguration.Expires)),
+            expires: DateTime.UtcNow.AddMinutes(minutes),
             signingCredentials: signingCredentials
         );
     }
