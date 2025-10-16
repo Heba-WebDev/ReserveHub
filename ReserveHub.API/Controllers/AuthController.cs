@@ -39,6 +39,10 @@ public class AuthController : ControllerBase
             return BadRequest(ModelState);
 
         var result = await _manager.AuthService.Login(dto);
+
+        if (!result.Status)
+            return StatusCode(StatusCodes.Status400BadRequest, result);
+
         return Ok(result);
     }
 }
