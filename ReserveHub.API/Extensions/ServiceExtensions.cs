@@ -51,8 +51,17 @@ public static class ServiceExtensions
         
     public static void ConfigureJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
-        var jwtConfiguration = new JwtConfiguration();
-        configuration.Bind(jwtConfiguration.Section, jwtConfiguration);
+        var jwtConfiguration = configuration
+       .GetSection("JwtSettings")
+       .Get<JwtConfiguration>() ?? throw new InvalidOperationException("JwtSettings section is missing");
+
+        if (string.IsNullOrWhiteSpace(jwtConfiguration.SecretKey))
+            throw new InvalidOperationException("JWT SecretKey is not configured");
+        if (string.IsNullOrWhiteSpace(jwtConfiguration.ValidIssuer))
+            throw new InvalidOperationException("JWT ValidIssuer is not configured");
+        if (string.IsNullOrWhiteSpace(jwtConfiguration.ValidAudience))
+            throw new InvalidOperationException("JWT ValidAudience is not configured");
+
         services.AddAuthentication(opt =>
         {
             opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -69,8 +78,8 @@ public static class ServiceExtensions
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = jwtConfiguration.ValidIssuer,
                 ValidAudience = jwtConfiguration.ValidAudience,
-                IssuerSigningKey = new
-                SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.SecretKey!))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.SecretKey)),
+                ClockSkew = TimeSpan.Zero
             };
         });
     }
