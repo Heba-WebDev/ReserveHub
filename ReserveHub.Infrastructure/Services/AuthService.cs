@@ -107,6 +107,12 @@ public class AuthService : IAuthService
 
     private async Task<TokenDto> CreateToken(bool populateExp)
     {
+        if (_user == null)
+            throw new InvalidOperationException("User must be set before creating token");
+
+        if (string.IsNullOrEmpty(_jwtConfiguration.SecretKey))
+            throw new InvalidOperationException("JWT SecretKey is not configured");
+    
         var signingCredentials = GetSigningCredentials();
         var claims = await GetClaims();
         var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
