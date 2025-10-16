@@ -120,7 +120,9 @@ public class AuthService : IAuthService
         _user!.RefreshToken = refreshToken;
         if (populateExp)
             _user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-        await _userManager.UpdateAsync(_user);
+        var updateResult = await _userManager.UpdateAsync(_user);
+        if (!updateResult.Succeeded)
+            throw new InvalidOperationException("Failed to persist refresh token");
         var accessToken = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
         return new TokenDto(accessToken, refreshToken);
     }
