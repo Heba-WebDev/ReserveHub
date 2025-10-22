@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.InteropServices;
 namespace ReserveHub.Application.DTOs.Auth;
 
 public class ResetPasswordDto
