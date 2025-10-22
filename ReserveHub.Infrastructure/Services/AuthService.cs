@@ -61,7 +61,7 @@ public class AuthService : IAuthService
             };
         }
 
-        await _userManager.AddToRoleAsync(user, dto.Role);
+        await _userManager.AddToRoleAsync(user, "Customer");
         
         // Generate email confirmation token using the default provider
         var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
