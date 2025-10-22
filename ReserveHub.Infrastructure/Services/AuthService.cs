@@ -9,7 +9,6 @@ using Microsoft.IdentityModel.Tokens;
 using ReserveHub.Application.DTOs;
 using ReserveHub.Application.DTOs.Auth;
 using ReserveHub.Application.Services.Contracts;
-using ReserveHub.Domain.Entities;
 using ReserveHub.Domain.Repositories;
 using ReserveHub.Infrastructure.Configurations;
 using ReserveHub.Infrastructure.Identity;
@@ -23,13 +22,17 @@ public class AuthService : IAuthService
     private readonly IOptions<JwtConfiguration> _configuration;
     private readonly JwtConfiguration _jwtConfiguration;
     private ApplicationUser? _user;
-    public AuthService(IRepositoryManager repository, IMapper mapper, UserManager<ApplicationUser> userManager, IOptions<JwtConfiguration> configuration)
+    private readonly IEmailService _emailService;
+    private readonly IOptions<FrontendConfiguration> _frontendConfiguration;
+    public AuthService(IRepositoryManager repository, IMapper mapper, UserManager<ApplicationUser> userManager, IOptions<JwtConfiguration> configuration, IEmailService emailService, IOptions<FrontendConfiguration> frontendConfiguration)
     {
         _repository = repository;
         _mapper = mapper;
         _userManager = userManager;
         _configuration = configuration;
         _jwtConfiguration = _configuration.Value;
+        _emailService = emailService;
+        _frontendConfiguration = frontendConfiguration;
     }
 
     public async Task<BaseResponseDto> Register(RegisterDto dto)
@@ -46,6 +49,8 @@ public class AuthService : IAuthService
 
         var user = _mapper.Map<ApplicationUser>(dto);
         user.UserName = dto.Email;
+        user.EmailConfirmed = false;
+
         var result = await _userManager.CreateAsync(user, dto.Password);
 
         if (!result.Succeeded)
@@ -59,11 +64,19 @@ public class AuthService : IAuthService
         }
 
         await _userManager.AddToRoleAsync(user, "Customer");
+        
+        
+        // Generate email confirmation token using the default provider
+        var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        var confirmationLink = $"{_frontendConfiguration.Value.Url}/confirm-email?email={Uri.EscapeDataString(user.Email!)}&token={Uri.EscapeDataString(confirmationToken)}";
+        
+        await _emailService.SendEmailConfirmationAsync(user.Email!, confirmationLink);
+    
 
         return new BaseResponseDto()
         {
             Status = true,
-            Message = "User successfully registered",
+            Message = "Registration successful. Please check your email to confirm your account.",
         };
     }
 
@@ -89,6 +102,16 @@ public class AuthService : IAuthService
 
             };
 
+        if (!user.EmailConfirmed)
+        {
+            return new BaseResponseDto()
+            {
+                Status = false,
+                Message = "Please confirm your email before logging in. Check your inbox for a confirmation email.",
+                Data = new { EmailConfirmed = false, Email = user.Email }
+            };
+        }
+
         _user = user;
 
         var token = await CreateToken(populateExp: true);
@@ -101,6 +124,85 @@ public class AuthService : IAuthService
             {
                 token
             }
+        };
+    }
+
+    public async Task<BaseResponseDto> ConfirmEmailAsync(string email, string token)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        
+        if (user == null)
+        {
+            return new BaseResponseDto()
+            {
+                Status = false,
+                Message = "Invalid credentials"
+            };
+        }
+        
+        if (user.EmailConfirmed)
+        {
+            return new BaseResponseDto()
+            {
+                Status = true,
+                Message = "Email confirmed successfully."
+            };
+        }
+        
+        var decodedToken = Uri.UnescapeDataString(token);
+        
+        var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
+        
+        if (!result.Succeeded)
+        {
+            
+            return new BaseResponseDto()
+            {
+                Status = false,
+                Message = "Invalid or expired confirmation token",
+                Data = result.Errors.Select(e => e.Description)
+            };
+        }
+        
+        return new BaseResponseDto()
+        {
+            Status = true,
+            Message = "Email confirmed successfully."
+        };
+    }
+
+    public async Task<BaseResponseDto> ResendConfirmationEmailAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+    
+        if (user == null)
+        {
+            return new BaseResponseDto()
+            {
+                Status = false,
+                Message = "Invalid credentials"
+            };
+        }
+    
+        if (user.EmailConfirmed)
+        {
+            return new BaseResponseDto()
+            {
+                Status = true,
+                Message = "If an account exists, a confirmation email has been sent."
+            };
+        }
+    
+
+        var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        var confirmationLink = $"{_frontendConfiguration.Value.Url}/confirm-email?email={Uri.EscapeDataString(user.Email)}&token={Uri.EscapeDataString(confirmationToken)}";
+        
+        await _emailService.SendEmailConfirmationAsync(user.Email, confirmationLink);
+        
+        return new BaseResponseDto()
+        {
+            Status = true,
+            Message = "If an account exists, a confirmation email has been sent."
         };
     }
 
@@ -177,5 +279,81 @@ public class AuthService : IAuthService
     public Task<BaseResponseDto> RefreshToken(TokenDto dto)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<BaseResponseDto> SendPasswordResetEmailAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+
+        if (user == null)
+            return new BaseResponseDto()
+            {
+                Status = true,
+                Message = "Email sent successfully.",
+
+            };
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+        var confirmationLink = $"{_frontendConfiguration.Value.Url}/reset-password?email={Uri.EscapeDataString(user.Email!)}&token={Uri.EscapeDataString(token)}";
+
+        await _emailService.SendPasswordResetAsync(user.Email!, confirmationLink);
+
+        return new BaseResponseDto()
+        {
+            Status = true,
+            Message = "Email sent successfully.",
+        };
+
+    }
+    
+    public async Task<BaseResponseDto> ResetPasswordAsync(ResetPasswordDto dto)
+    {
+        var user = await _userManager.FindByEmailAsync(dto.Email);
+        
+        if (user == null)
+        {
+            return new BaseResponseDto()
+            {
+                Status = false,
+                Message = "Invalid credentials"
+            };
+        }
+        
+        var decodedToken = Uri.UnescapeDataString(dto.Token);
+        
+        var isValidToken = await _userManager.VerifyUserTokenAsync(
+            user, 
+            _userManager.Options.Tokens.PasswordResetTokenProvider, 
+            "ResetPassword", 
+            decodedToken
+        );
+
+        if (!isValidToken)
+        {
+            return new BaseResponseDto()
+            {
+                Status = false,
+                Message = "Invalid or expired reset token"
+            };
+        }
+
+        var result = await _userManager.ResetPasswordAsync(user, decodedToken, dto.Password);
+
+        if (!result.Succeeded)
+        {
+            return new BaseResponseDto()
+            {
+                Status = false,
+                Message = "An error occurred while updating the password.",
+                Data = result.Errors.Select(e => e.Description)
+            };
+        }
+        
+        return new BaseResponseDto()
+        {
+            Status = true,
+            Message = "Password successfully updated."
+        };
     }
 }

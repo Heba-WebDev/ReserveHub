@@ -41,8 +41,73 @@ public class AuthController : ControllerBase
         var result = await _manager.AuthService.Login(dto);
 
         if (!result.Status)
+        {
+            if (result.Data != null && result.Data.GetType().GetProperty("EmailConfirmed") != null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, result);
+            }
+
             return StatusCode(StatusCodes.Status400BadRequest, result);
+        }
 
         return Ok(result);
+    }
+
+    [HttpPost("confirm-email")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BaseResponseDto))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ConfirmEmail(ConfirmEmailDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var result = await _manager.AuthService.ConfirmEmailAsync(dto.Email, dto.Token);
+
+       return result.Status ? Ok(result) : StatusCode(StatusCodes.Status400BadRequest, result);
+    }
+
+    [HttpPost("resend-confirmation")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BaseResponseDto))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ResendConfirmation(ResendConfirmationDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var result = await _manager.AuthService.ResendConfirmationEmailAsync(dto.Email);
+
+        if (!result.Status)
+        {
+ 
+            return StatusCode(StatusCodes.Status400BadRequest, result);
+        }
+
+        return result.Status ? Ok(result) : StatusCode(StatusCodes.Status400BadRequest, result);
+    }
+
+    [HttpPost("forgot-password")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BaseResponseDto))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var result = await _manager.AuthService.SendPasswordResetEmailAsync(dto.Email);
+
+        return result.Status ? Ok(result) : StatusCode(StatusCodes.Status400BadRequest, result);
+    }
+
+    [HttpPost("reset-password")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BaseResponseDto))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var result = await _manager.AuthService.ResetPasswordAsync(dto);
+
+        return result.Status ? Ok(result) : StatusCode(StatusCodes.Status400BadRequest, result);
     }
 }
