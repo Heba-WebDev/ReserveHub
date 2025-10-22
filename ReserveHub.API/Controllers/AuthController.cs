@@ -63,15 +63,7 @@ public class AuthController : ControllerBase
 
         var result = await _manager.AuthService.ConfirmEmailAsync(dto.Email, dto.Token);
 
-        if (!result.Status)
-        {
-            if (result.Message?.Contains("Invalid credentials", StringComparison.OrdinalIgnoreCase) == true)
-                return StatusCode(StatusCodes.Status400BadRequest, result);
-
-            return StatusCode(StatusCodes.Status400BadRequest, result);
-        }
-
-        return Ok(result);
+       return result.Status ? Ok(result) : StatusCode(StatusCodes.Status400BadRequest, result);
     }
 
     [HttpPost("resend-confirmation")]
@@ -86,13 +78,11 @@ public class AuthController : ControllerBase
 
         if (!result.Status)
         {
-            if (result.Message?.Contains("Invalid credentials", StringComparison.OrdinalIgnoreCase) == true)
-                return StatusCode(StatusCodes.Status400BadRequest, result);
-
+ 
             return StatusCode(StatusCodes.Status400BadRequest, result);
         }
 
-        return Ok(result);
+        return result.Status ? Ok(result) : StatusCode(StatusCodes.Status400BadRequest, result);
     }
 
     [HttpPost("forgot-password")]
@@ -118,14 +108,6 @@ public class AuthController : ControllerBase
 
         var result = await _manager.AuthService.ResetPasswordAsync(dto);
 
-        if (!result.Status)
-        {
-            if (result.Message?.Contains("Invalid credentials", StringComparison.OrdinalIgnoreCase) == true)
-                return StatusCode(StatusCodes.Status400BadRequest, result);
-
-            return StatusCode(StatusCodes.Status400BadRequest, result);
-        }
-
-        return Ok(result);
+        return result.Status ? Ok(result) : StatusCode(StatusCodes.Status400BadRequest, result);
     }
 }
