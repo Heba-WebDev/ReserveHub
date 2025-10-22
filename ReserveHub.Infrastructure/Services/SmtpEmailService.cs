@@ -37,20 +37,27 @@ public class SmtpEmailService : IEmailService
         {
             using var client = new SmtpClient(_emailConfig.SmtpServer, _emailConfig.SmtpPort);
             client.EnableSsl = _emailConfig.EnableSsl;
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.UseDefaultCredentials = false;
+            client.Timeout = 15000; // 15s
             client.Credentials = new NetworkCredential(_emailConfig.SmtpUsername, _emailConfig.SmtpPassword);
-
+            
             using var message = new MailMessage();
             message.From = new MailAddress(_emailConfig.FromEmail, _emailConfig.FromName);
+            
             message.To.Add(to);
             message.Subject = subject;
+            message.SubjectEncoding = System.Text.Encoding.UTF8;
             message.Body = body;
+            message.BodyEncoding = System.Text.Encoding.UTF8;
+            message.HeadersEncoding = System.Text.Encoding.UTF8;
             message.IsBodyHtml = isHtml;
 
             await client.SendMailAsync(message);
         }
         catch (Exception ex)
         {
-            throw new InvalidOperationException($"Failed to send email to {to}", ex);
+            throw new InvalidOperationException("Failed to send email.", ex);
         }
     }
 
