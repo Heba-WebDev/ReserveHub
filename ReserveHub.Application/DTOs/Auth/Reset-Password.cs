@@ -11,7 +11,8 @@ public class ResetPasswordDto
     public required string Token { get; set; }
 
     [Required(ErrorMessage = "Password is required")]
-    [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$",
-        ErrorMessage = "Password must be at least 8 characters long, contain at least one letter, one number, and one special character")]
+    [MinLength(8, ErrorMessage = "Password must be at least 8 characters long")]
+    [RegularExpression(@"^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).*$",
+        ErrorMessage = "Password must contain at least one letter, one number, and one special character")]
     public required string Password { get; set; }
 }
