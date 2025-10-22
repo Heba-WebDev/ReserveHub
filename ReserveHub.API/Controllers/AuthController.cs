@@ -56,7 +56,6 @@ public class AuthController : ControllerBase
     [HttpPost("confirm-email")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BaseResponseDto))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ConfirmEmail(ConfirmEmailDto dto)
     {
         if (!ModelState.IsValid)
@@ -66,8 +65,8 @@ public class AuthController : ControllerBase
 
         if (!result.Status)
         {
-            if (result.Message!.Contains("User not found"))
-                return StatusCode(StatusCodes.Status404NotFound, result);
+            if (result.Message!.Contains("Invalid credentials"))
+                return StatusCode(StatusCodes.Status400BadRequest, result);
 
             return StatusCode(StatusCodes.Status400BadRequest, result);
         }
@@ -78,7 +77,6 @@ public class AuthController : ControllerBase
     [HttpPost("resend-confirmation")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BaseResponseDto))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ResendConfirmation(ResendConfirmationDto dto)
     {
         if (!ModelState.IsValid)
@@ -88,8 +86,8 @@ public class AuthController : ControllerBase
 
         if (!result.Status)
         {
-            if (result.Message!.Contains("User not found"))
-                return StatusCode(StatusCodes.Status404NotFound, result);
+            if (result.Message!.Contains("Invalid credentials"))
+                return StatusCode(StatusCodes.Status400BadRequest, result);
 
             return StatusCode(StatusCodes.Status400BadRequest, result);
         }
@@ -122,7 +120,6 @@ public class AuthController : ControllerBase
     [HttpPost("reset-password")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BaseResponseDto))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)
     {
         if (!ModelState.IsValid)
@@ -132,8 +129,8 @@ public class AuthController : ControllerBase
 
         if (!result.Status)
         {
-            if (result.Message!.Contains("User not found"))
-                return StatusCode(StatusCodes.Status404NotFound, result);
+            if (result.Message!.Contains("Invalid credentials"))
+                return StatusCode(StatusCodes.Status400BadRequest, result);
 
             return StatusCode(StatusCodes.Status400BadRequest, result);
         }

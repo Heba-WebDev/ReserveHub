@@ -133,7 +133,7 @@ public class AuthService : IAuthService
             return new BaseResponseDto()
             {
                 Status = false,
-                Message = "User not found"
+                Message = "Invalid credentials"
             };
         }
         
@@ -177,7 +177,7 @@ public class AuthService : IAuthService
             return new BaseResponseDto()
             {
                 Status = false,
-                Message = "User not found"
+                Message = "Invalid credentials"
             };
         }
     
@@ -313,7 +313,7 @@ public class AuthService : IAuthService
             return new BaseResponseDto()
             {
                 Status = false,
-                Message = "User not found"
+                Message = "Invalid credentials"
             };
         }
         
