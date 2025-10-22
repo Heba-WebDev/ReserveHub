@@ -98,7 +98,6 @@ public class AuthController : ControllerBase
     [HttpPost("forgot-password")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BaseResponseDto))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ForgotPassword(ForgotPasswordDto dto)
     {
         if (!ModelState.IsValid)
@@ -106,15 +105,7 @@ public class AuthController : ControllerBase
 
         var result = await _manager.AuthService.SendPasswordResetEmailAsync(dto.Email);
 
-        if (!result.Status)
-        {
-            if (result.Message?.Contains("Invalid credentials", StringComparison.OrdinalIgnoreCase) == true)
-                return StatusCode(StatusCodes.Status400BadRequest, result);
-
-            return StatusCode(StatusCodes.Status400BadRequest, result);
-        }
-
-        return Ok(result);
+        return result.Status ? Ok(result) : StatusCode(StatusCodes.Status400BadRequest, result);
     }
 
     [HttpPost("reset-password")]
