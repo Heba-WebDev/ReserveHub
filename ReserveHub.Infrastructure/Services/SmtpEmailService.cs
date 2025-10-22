@@ -63,6 +63,7 @@ public class SmtpEmailService : IEmailService
 
     private string CreateEmailConfirmationBody(string confirmationLink)
     {
+        var safe = WebUtility.HtmlEncode(confirmationLink);
         return $@"
 <!DOCTYPE html>
 <html>
@@ -88,18 +89,18 @@ public class SmtpEmailService : IEmailService
             <p>Thank you for registering with ReserveHub. To complete your registration and start using our services, please confirm your email address by clicking the button below:</p>
             
             <div style='text-align: center;'>
-                <a href='{confirmationLink}' class='button'>Confirm Email Address</a>
+                <a href='{safe}' class='button'>Confirm Email Address</a>
             </div>
             
             <p>If the button doesn't work, you can copy and paste this link into your browser:</p>
-            <p style='word-break: break-all; background-color: #e9ecef; padding: 10px; border-radius: 3px;'>{confirmationLink}</p>
+            <p style='word-break: break-all; background-color: #e9ecef; padding: 10px; border-radius: 3px;'>{safe}</p>
             
             <p><strong>Important:</strong> This link will expire in 24 hours for security reasons.</p>
             
             <p>If you didn't create an account with ReserveHub, please ignore this email.</p>
         </div>
         <div class='footer'>
-            <p>© 2024 ReserveHub. All rights reserved.</p>
+            <p>© {DateTime.UtcNow.Year} ReserveHub. All rights reserved.</p>
             <p>This is an automated message, please do not reply to this email.</p>
         </div>
     </div>
@@ -109,6 +110,7 @@ public class SmtpEmailService : IEmailService
 
     private string CreatePasswordResetBody(string resetLink)
     {
+        var safe = System.Net.WebUtility.HtmlEncode(resetLink);
         return $@"
 <!DOCTYPE html>
 <html>
@@ -134,18 +136,18 @@ public class SmtpEmailService : IEmailService
             <p>We received a request to reset your password for your ReserveHub account. Click the button below to reset your password:</p>
             
             <div style='text-align: center;'>
-                <a href='{resetLink}' class='button'>Reset Password</a>
+                <a href='{safe}' class='button'>Reset Password</a>
             </div>
             
             <p>If the button doesn't work, you can copy and paste this link into your browser:</p>
-            <p style='word-break: break-all; background-color: #e9ecef; padding: 10px; border-radius: 3px;'>{resetLink}</p>
+            <p style='word-break: break-all; background-color: #e9ecef; padding: 10px; border-radius: 3px;'>{safe}</p>
             
             <p><strong>Important:</strong> This link will expire in 1 hour for security reasons.</p>
             
             <p>If you didn't request a password reset, please ignore this email. Your password will remain unchanged.</p>
         </div>
         <div class='footer'>
-            <p>© 2024 ReserveHub. All rights reserved.</p>
+            <p>© {DateTime.UtcNow.Year} ReserveHub. All rights reserved.</p>
             <p>This is an automated message, please do not reply to this email.</p>
         </div>
     </div>
