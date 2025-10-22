@@ -12,9 +12,9 @@ namespace ReserveHub.Infrastructure.Services;
 public class ServiceManager : IServiceManager
 {
     private readonly Lazy<IAuthService> _authService;
-    public ServiceManager(IRepositoryManager repositoryManager, IMapper mapper, UserManager<ApplicationUser> userManager, IOptions<JwtConfiguration> configuration)
+    public ServiceManager(IRepositoryManager repositoryManager, IMapper mapper, UserManager<ApplicationUser> userManager, IOptions<JwtConfiguration> configuration, IEmailService emailService)
     {
-        _authService = new Lazy<IAuthService>(() => new AuthService(repositoryManager, mapper, userManager, configuration));
+        _authService = new Lazy<IAuthService>(() => new AuthService(repositoryManager, mapper, userManager, configuration, emailService));
     }
     public IAuthService AuthService => _authService.Value;
 }
