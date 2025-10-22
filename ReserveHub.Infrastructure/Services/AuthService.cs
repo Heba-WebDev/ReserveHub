@@ -23,7 +23,8 @@ public class AuthService : IAuthService
     private readonly JwtConfiguration _jwtConfiguration;
     private ApplicationUser? _user;
     private readonly IEmailService _emailService;
-    public AuthService(IRepositoryManager repository, IMapper mapper, UserManager<ApplicationUser> userManager, IOptions<JwtConfiguration> configuration, IEmailService emailService)
+    private readonly IOptions<FrontendConfiguration> _frontendConfiguration;
+    public AuthService(IRepositoryManager repository, IMapper mapper, UserManager<ApplicationUser> userManager, IOptions<JwtConfiguration> configuration, IEmailService emailService, IOptions<FrontendConfiguration> frontendConfiguration)
     {
         _repository = repository;
         _mapper = mapper;
@@ -31,6 +32,7 @@ public class AuthService : IAuthService
         _configuration = configuration;
         _jwtConfiguration = _configuration.Value;
         _emailService = emailService;
+        _frontendConfiguration = frontendConfiguration;
     }
 
     public async Task<BaseResponseDto> Register(RegisterDto dto)
@@ -63,9 +65,10 @@ public class AuthService : IAuthService
 
         await _userManager.AddToRoleAsync(user, "Customer");
         
+        
         // Generate email confirmation token using the default provider
         var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-        var confirmationLink = $"http://localhost:3000/confirm-email?email={Uri.EscapeDataString(user.Email!)}&token={Uri.EscapeDataString(confirmationToken)}";
+        var confirmationLink = $"{_frontendConfiguration.Value.Url}/confirm-email?email={Uri.EscapeDataString(user.Email!)}&token={Uri.EscapeDataString(confirmationToken)}";
         
         await _emailService.SendEmailConfirmationAsync(user.Email!, confirmationLink);
     
@@ -192,7 +195,7 @@ public class AuthService : IAuthService
     
 
         var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-        var confirmationLink = $"http://localhost:3000/confirm-email?email={Uri.EscapeDataString(user.Email)}&token={Uri.EscapeDataString(confirmationToken)}";
+        var confirmationLink = $"{_frontendConfiguration.Value.Url}/confirm-email?email={Uri.EscapeDataString(user.Email)}&token={Uri.EscapeDataString(confirmationToken)}";
         
         await _emailService.SendEmailConfirmationAsync(user.Email, confirmationLink);
         
@@ -292,7 +295,7 @@ public class AuthService : IAuthService
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-        var confirmationLink = $"http://localhost:3000/reset-password?email={Uri.EscapeDataString(user.Email!)}&token={Uri.EscapeDataString(token)}";
+        var confirmationLink = $"{_frontendConfiguration.Value.Url}/reset-password?email={Uri.EscapeDataString(user.Email!)}&token={Uri.EscapeDataString(token)}";
 
         await _emailService.SendPasswordResetAsync(user.Email!, confirmationLink);
 

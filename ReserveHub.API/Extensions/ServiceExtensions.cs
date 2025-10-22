@@ -53,6 +53,9 @@ public static class ServiceExtensions
     public static void AddEmailConfiguration(this IServiceCollection services, IConfiguration configuration) =>
         services.Configure<EmailConfiguration>(configuration.GetSection("EmailSettings"));
 
+    public static void AddFrontendConfiguration(this IServiceCollection services, IConfiguration configuration) =>
+        services.Configure<FrontendConfiguration>(configuration.GetSection("FRONTEND_BASE_URL"));
+
     public static void ConfigureEmailService(this IServiceCollection services)
     {
         services.AddScoped<IEmailService, SmtpEmailService>();

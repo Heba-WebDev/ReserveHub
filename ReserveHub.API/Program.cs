@@ -18,6 +18,7 @@ builder.Services.AddJwtConfiguration(builder.Configuration);
 builder.Services.ConfigureJwtAuthentication(builder.Configuration);
 builder.Services.ConfigureIdentity();
 builder.Services.AddEmailConfiguration(builder.Configuration);
+builder.Services.AddFrontendConfiguration(builder.Configuration);
 builder.Services.ConfigureEmailService();
 builder.Services.AddSwaggerGen();
 
