@@ -41,6 +41,7 @@ public static class ServiceExtensions
             opt.Password.RequireNonAlphanumeric = true;
             opt.Password.RequiredLength = 8;
             opt.User.RequireUniqueEmail = true;
+            opt.SignIn.RequireConfirmedEmail = true;
         })
         .AddEntityFrameworkStores<RepositoryContext>()
         .AddDefaultTokenProviders();
@@ -48,6 +49,14 @@ public static class ServiceExtensions
 
     public static void AddJwtConfiguration(this IServiceCollection services, IConfiguration configuration) =>
         services.Configure<JwtConfiguration>(configuration.GetSection("JwtSettings"));
+
+    public static void AddEmailConfiguration(this IServiceCollection services, IConfiguration configuration) =>
+        services.Configure<EmailConfiguration>(configuration.GetSection("EmailSettings"));
+
+    public static void ConfigureEmailService(this IServiceCollection services)
+    {
+        services.AddScoped<IEmailService, SmtpEmailService>();
+    }
         
     public static void ConfigureJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
