@@ -65,7 +65,7 @@ public class AuthController : ControllerBase
 
         if (!result.Status)
         {
-            if (result.Message!.Contains("Invalid credentials"))
+            if (result.Message?.Contains("Invalid credentials", StringComparison.OrdinalIgnoreCase) == true)
                 return StatusCode(StatusCodes.Status400BadRequest, result);
 
             return StatusCode(StatusCodes.Status400BadRequest, result);
@@ -86,7 +86,7 @@ public class AuthController : ControllerBase
 
         if (!result.Status)
         {
-            if (result.Message!.Contains("Invalid credentials"))
+            if (result.Message?.Contains("Invalid credentials", StringComparison.OrdinalIgnoreCase) == true)
                 return StatusCode(StatusCodes.Status400BadRequest, result);
 
             return StatusCode(StatusCodes.Status400BadRequest, result);
@@ -108,8 +108,8 @@ public class AuthController : ControllerBase
 
         if (!result.Status)
         {
-            if (result.Message!.Contains("User not found"))
-                return StatusCode(StatusCodes.Status404NotFound, result);
+            if (result.Message?.Contains("Invalid credentials", StringComparison.OrdinalIgnoreCase) == true)
+                return StatusCode(StatusCodes.Status400BadRequest, result);
 
             return StatusCode(StatusCodes.Status400BadRequest, result);
         }
@@ -129,7 +129,7 @@ public class AuthController : ControllerBase
 
         if (!result.Status)
         {
-            if (result.Message!.Contains("Invalid credentials"))
+            if (result.Message?.Contains("Invalid credentials", StringComparison.OrdinalIgnoreCase) == true)
                 return StatusCode(StatusCodes.Status400BadRequest, result);
 
             return StatusCode(StatusCodes.Status400BadRequest, result);
