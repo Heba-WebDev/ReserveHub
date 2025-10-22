@@ -145,7 +145,7 @@ public class AuthService : IAuthService
             return new BaseResponseDto()
             {
                 Status = true,
-                Message = "Email already confirmed"
+                Message = "Email confirmed successfully."
             };
         }
         
@@ -167,7 +167,7 @@ public class AuthService : IAuthService
         return new BaseResponseDto()
         {
             Status = true,
-            Message = "Email confirmed successfully. You can now log in."
+            Message = "Email confirmed successfully."
         };
     }
 
@@ -188,8 +188,8 @@ public class AuthService : IAuthService
         {
             return new BaseResponseDto()
             {
-                Status = false,
-                Message = "Email already confirmed"
+                Status = true,
+                Message = "If an account exists, a confirmation email has been sent."
             };
         }
     
@@ -202,7 +202,7 @@ public class AuthService : IAuthService
         return new BaseResponseDto()
         {
             Status = true,
-            Message = "Confirmation email sent successfully"
+            Message = "If an account exists, a confirmation email has been sent."
         };
     }
 
