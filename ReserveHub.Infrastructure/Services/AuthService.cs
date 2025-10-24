@@ -195,9 +195,9 @@ public class AuthService : IAuthService
     
 
         var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-        var confirmationLink = $"{_frontendConfiguration.Value.Url}/confirm-email?email={Uri.EscapeDataString(user.Email)}&token={Uri.EscapeDataString(confirmationToken)}";
+        var confirmationLink = $"{_frontendConfiguration.Value.Url}/confirm-email?email={Uri.EscapeDataString(user.Email!)}&token={Uri.EscapeDataString(confirmationToken)}";
         
-        await _emailService.SendEmailConfirmationAsync(user.Email, confirmationLink);
+        await _emailService.SendEmailConfirmationAsync(user.Email!, confirmationLink);
         
         return new BaseResponseDto()
         {
@@ -276,9 +276,78 @@ public class AuthService : IAuthService
         }
     }
 
-    public Task<BaseResponseDto> RefreshToken(TokenDto dto)
+    public async Task<BaseResponseDto> RefreshToken(TokenDto dto)
     {
-        throw new NotImplementedException();
+        ClaimsPrincipal principal;
+        try
+        {
+            principal = GetPrincipalFromExpiredToken(dto.AccessToken);
+        }
+        catch (SecurityTokenException)
+        {
+            return new BaseResponseDto { Status = false, Message = "Invalid token" };
+        }
+        catch
+        {
+            return new BaseResponseDto { Status = false, Message = "Invalid token" };
+        }
+
+        var email = principal.FindFirst(ClaimTypes.Email)?.Value;
+        
+        if (string.IsNullOrEmpty(email))
+        {
+            return new BaseResponseDto
+            {
+                Status = false,
+                Message = "Invalid token"
+            };
+        }
+
+        var user = await _userManager.FindByEmailAsync(email);
+        
+        if (user == null || user.RefreshToken != dto.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+        {
+            return new BaseResponseDto
+            {
+                Status = false,
+                Message = "Invalid refresh token"
+            };
+        }
+
+        _user = user;
+        var newToken = await CreateToken(populateExp: true);
+
+        return new BaseResponseDto
+        {
+            Status = true,
+            Message = "Token refreshed successfully",
+            Data = new { token = newToken }
+        };
+    }
+
+    private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+    {
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = true,
+            ValidateIssuer = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfiguration.SecretKey!)),
+            ValidateLifetime = false, // Don't validate lifetime for expired tokens
+            ValidIssuer = _jwtConfiguration.ValidIssuer,
+            ValidAudience = _jwtConfiguration.ValidAudience,
+        };
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
+        
+        if (securityToken is not JwtSecurityToken jwtSecurityToken || 
+            !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+        {
+            throw new SecurityTokenException("Invalid token");
+        }
+
+        return principal;
     }
 
     public async Task<BaseResponseDto> SendPasswordResetEmailAsync(string email)

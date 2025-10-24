@@ -1,4 +1,5 @@
 using System.Text;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +51,9 @@ public static class ServiceExtensions
     public static void AddJwtConfiguration(this IServiceCollection services, IConfiguration configuration) =>
         services.Configure<JwtConfiguration>(configuration.GetSection("JwtSettings"));
 
+    public static void AddGoogleConfiguration(this IServiceCollection services, IConfiguration configuration) =>
+        services.Configure<GoogleConfiguration>(configuration.GetSection("Authentication:Google"));
+
     public static void AddEmailConfiguration(this IServiceCollection services, IConfiguration configuration) =>
         services.Configure<EmailConfiguration>(configuration.GetSection("EmailSettings"));
 
@@ -93,6 +97,20 @@ public static class ServiceExtensions
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.SecretKey)),
                 ClockSkew = TimeSpan.Zero
             };
+        })
+        .AddGoogle(googleOptions =>
+        {
+            var googleConfig = configuration.GetSection("Authentication:Google").Get<GoogleConfiguration>();
+            if (googleConfig is null ||
+               string.IsNullOrWhiteSpace(googleConfig.ClientId) ||
+               string.IsNullOrWhiteSpace(googleConfig.ClientSecret))
+            {
+                throw new InvalidOperationException("Authentication:Google:ClientId/ClientSecret are not configured.");
+            }
+        
+            googleOptions.ClientId = googleConfig!.ClientId;
+            googleOptions.ClientSecret = googleConfig.ClientSecret;
+            googleOptions.CallbackPath = "/api/auth/google-callback";
         });
     }
 }
