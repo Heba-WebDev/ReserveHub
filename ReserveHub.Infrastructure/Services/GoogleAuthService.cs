@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using ReserveHub.Application.DTOs;
@@ -64,6 +65,17 @@ public class GoogleAuthService : IGoogleAuthService
             }
             else if (string.IsNullOrEmpty(existingUser.GoogleId))
             {
+                var googleIdInUse = await _userManager.Users
+                    .AnyAsync(u => u.GoogleId == googleId && u.Id != existingUser.Id);
+                if (googleIdInUse)
+                {
+                    return new BaseResponseDto
+                    {
+                        Status = false,
+                        Message = "This Google account is already linked to another user"
+                    };
+                }
+                
                 existingUser.GoogleId = googleId;
                 var updateResult = await _userManager.UpdateAsync(existingUser);
                 
