@@ -132,7 +132,7 @@ public class AuthController : ControllerBase
         return result.Status ? Ok(result) : StatusCode(StatusCodes.Status400BadRequest, result);
     }
 
-    [HttpGet("signin-google")]
+    [HttpGet("login-google")]
     public IActionResult GoogleLogin()
     {
         var properties = new AuthenticationProperties
@@ -154,15 +154,19 @@ public class AuthController : ControllerBase
         var email = claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
         var name = claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
         var googleId = claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-        
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(googleId))
+            return BadRequest("Missing required Google claims (email/id).");
+
         var authResult = await _manager.GoogleAuthService.HandleGoogleCallbackAsync(email, name, googleId);
         
         if (authResult.Status)
         {
-            // Extract the TokenDto from the Data property
-            var tokenDto = authResult.Data as dynamic;
-            var accessToken = tokenDto?.AccessToken;
-            return Redirect($"{_frontendConfiguration.Value.Url}/auth/callback?token={accessToken}");
+            if (authResult.Data is TokenDto token)
+            {
+                var accessToken = Uri.EscapeDataString(token.AccessToken);
+                return Redirect($"{_frontendConfiguration.Value.Url}/auth/callback#token={accessToken}");
+            }
+            return BadRequest("Unexpected auth result payload.");
         }
         
         return BadRequest(authResult);
