@@ -55,7 +55,7 @@ public class GoogleAuthService : IGoogleAuthService
             if (existingUser.GoogleId == googleId)
             {
                 _user = existingUser;
-                var token = await CreateToken(populateExp: true);
+                var token = await CreateToken(existingUser, populateExp: true);
                 return new BaseResponseDto
                 {
                     Status = true,
@@ -81,8 +81,7 @@ public class GoogleAuthService : IGoogleAuthService
                 
                 if (updateResult.Succeeded)
                 {
-                    _user = existingUser;
-                    var token = await CreateToken(populateExp: true);
+                    var token = await CreateToken(existingUser, populateExp: true);
                     return new BaseResponseDto
                     {
                         Status = true,
@@ -125,8 +124,7 @@ public class GoogleAuthService : IGoogleAuthService
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(newUser, "Customer");
-                _user = newUser;
-                var token = await CreateToken(populateExp: true);
+                var token = await CreateToken(newUser, populateExp: true);
                 
                 return new BaseResponseDto
                 {
@@ -147,24 +145,24 @@ public class GoogleAuthService : IGoogleAuthService
         }
     }
 
-    private async Task<TokenDto> CreateToken(bool populateExp)
+    private async Task<TokenDto> CreateToken(ApplicationUser user, bool populateExp)
     {
-        if (_user == null)
-            throw new InvalidOperationException("User must be set before creating token");
+        if (user == null)
+            throw new ArgumentNullException(nameof(user));
 
         if (string.IsNullOrEmpty(_jwtConfig.SecretKey))
             throw new InvalidOperationException("JWT SecretKey is not configured");
 
         var signingCredentials = GetSigningCredentials();
-        var claims = await GetClaims();
+        var claims = await GetClaims(user);
         var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
         var refreshToken = GenerateRefreshToken();
         
-        _user!.RefreshToken = refreshToken;
+        user.RefreshToken = refreshToken;
         if (populateExp)
-            _user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
             
-        var updateResult = await _userManager.UpdateAsync(_user);
+        var updateResult = await _userManager.UpdateAsync(user);
         if (!updateResult.Succeeded)
             throw new InvalidOperationException("Failed to persist refresh token");
             
@@ -179,14 +177,14 @@ public class GoogleAuthService : IGoogleAuthService
         return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
     }
 
-    private async Task<List<Claim>> GetClaims()
+    private async Task<List<Claim>> GetClaims(ApplicationUser user)
     {
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Email, _user!.Email!),
-            new Claim(ClaimTypes.Name, _user!.Email!),
+            new Claim(ClaimTypes.Email, user.Email!),
+            new Claim(ClaimTypes.Name, user.Email!),
         };
-        var roles = await _userManager.GetRolesAsync(_user);
+        var roles = await _userManager.GetRolesAsync(user);
         foreach (var role in roles)
         {
             claims.Add(new Claim(ClaimTypes.Role, role));
