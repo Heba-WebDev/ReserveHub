@@ -101,6 +101,13 @@ public static class ServiceExtensions
         .AddGoogle(googleOptions =>
         {
             var googleConfig = configuration.GetSection("Authentication:Google").Get<GoogleConfiguration>();
+            if (googleConfig is null ||
+               string.IsNullOrWhiteSpace(googleConfig.ClientId) ||
+               string.IsNullOrWhiteSpace(googleConfig.ClientSecret))
+            {
+                throw new InvalidOperationException("Authentication:Google:ClientId/ClientSecret are not configured.");
+            }
+        
             googleOptions.ClientId = googleConfig!.ClientId;
             googleOptions.ClientSecret = googleConfig.ClientSecret;
             googleOptions.CallbackPath = "/api/auth/google-callback";
