@@ -278,7 +278,20 @@ public class AuthService : IAuthService
 
     public async Task<BaseResponseDto> RefreshToken(TokenDto dto)
     {
-        var principal = GetPrincipalFromExpiredToken(dto.AccessToken);
+        ClaimsPrincipal principal;
+        try
+        {
+            principal = GetPrincipalFromExpiredToken(dto.AccessToken);
+        }
+        catch (SecurityTokenException)
+        {
+            return new BaseResponseDto { Status = false, Message = "Invalid token" };
+        }
+        catch
+        {
+            return new BaseResponseDto { Status = false, Message = "Invalid token" };
+        }
+
         var email = principal.FindFirst(ClaimTypes.Email)?.Value;
         
         if (string.IsNullOrEmpty(email))
