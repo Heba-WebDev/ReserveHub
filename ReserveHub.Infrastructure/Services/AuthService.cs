@@ -63,7 +63,13 @@ public class AuthService : IAuthService
             };
         }
 
-        await _userManager.AddToRoleAsync(user, "Customer");
+        if (dto.Role == "Owner")
+        {
+            await _userManager.AddToRoleAsync(user, "Owner");
+        } else
+        {
+            await _userManager.AddToRoleAsync(user, "Customer");
+        }        
         
         
         // Generate email confirmation token using the default provider

@@ -11,6 +11,11 @@ public class RoleConfiguration : IEntityTypeConfiguration<IdentityRole>
         builder.HasData(
             new IdentityRole
             {
+                Name = "Owner",
+                NormalizedName = "OWNER"
+            },
+            new IdentityRole
+            {
                 Name = "Customer",
                 NormalizedName = "CUSTOMER"
             },
