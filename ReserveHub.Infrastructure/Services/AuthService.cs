@@ -65,10 +65,28 @@ public class AuthService : IAuthService
 
         if (dto.Role == "Owner")
         {
-            await _userManager.AddToRoleAsync(user, "Owner");
+            var roleResult = await _userManager.AddToRoleAsync(user, "Owner");
+            if (!roleResult.Succeeded)
+            {
+                return new BaseResponseDto()
+                {
+                    Status = false,
+                    Message = "Registration failed",
+                    Data = roleResult.Errors.Select(e => e.Description)
+                };
+            }
         } else
         {
-            await _userManager.AddToRoleAsync(user, "Customer");
+            var roleResult = await _userManager.AddToRoleAsync(user, "Customer");
+            if (!roleResult.Succeeded)
+            {
+                return new BaseResponseDto()
+                {
+                    Status = false,
+                    Message = "Registration failed",
+                    Data = roleResult.Errors.Select(e => e.Description)
+                };
+            }
         }        
         
         
