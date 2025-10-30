@@ -16,6 +16,10 @@ public class RegisterDto
         ErrorMessage = "Password must contain at least one letter, one number, and one special character")]
     public required string Password { get; set; }
 
+    [Required(ErrorMessage = "Role is required")]
+    [RegularExpression("^(Customer|Owner)$", ErrorMessage = "Role must be either 'Customer' or 'Owner'")]
+    public required string Role { get; set; } = "Customer";
+
     [Phone(ErrorMessage = "Invalid phone number format")]
     public string? PhoneNumber { get; set; }
     public string? Address { get; set; }

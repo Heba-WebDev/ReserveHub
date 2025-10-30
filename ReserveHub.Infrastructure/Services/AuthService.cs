@@ -63,7 +63,31 @@ public class AuthService : IAuthService
             };
         }
 
-        await _userManager.AddToRoleAsync(user, "Customer");
+        if (dto.Role == "Owner")
+        {
+            var roleResult = await _userManager.AddToRoleAsync(user, "Owner");
+            if (!roleResult.Succeeded)
+            {
+                return new BaseResponseDto()
+                {
+                    Status = false,
+                    Message = "Registration failed",
+                    Data = roleResult.Errors.Select(e => e.Description)
+                };
+            }
+        } else
+        {
+            var roleResult = await _userManager.AddToRoleAsync(user, "Customer");
+            if (!roleResult.Succeeded)
+            {
+                return new BaseResponseDto()
+                {
+                    Status = false,
+                    Message = "Registration failed",
+                    Data = roleResult.Errors.Select(e => e.Description)
+                };
+            }
+        }        
         
         
         // Generate email confirmation token using the default provider
