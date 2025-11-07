@@ -37,16 +37,22 @@ public class AuthService : IAuthService
 
     public async Task<BaseResponseDto> Register(RegisterDto dto)
     {
+        Console.WriteLine($"[AuthService.Register] Starting registration for email: {dto.Email}, Role: {dto.Role}");
+        
         var email = await _userManager.FindByEmailAsync(dto.Email);
 
         if (email != null)
+        {
+            Console.WriteLine($"[AuthService.Register] Email already exists: {dto.Email}");
             return new BaseResponseDto()
             {
                 Status = false,
-                Message = "Registration failed",
-
+                Message = "Registration failed: Email already exists",
+                Data = new { error = "Email already registered" }
             };
+        }
 
+        Console.WriteLine($"[AuthService.Register] Creating user...");
         var user = _mapper.Map<ApplicationUser>(dto);
         user.UserName = dto.Email;
         user.EmailConfirmed = false;
@@ -55,39 +61,31 @@ public class AuthService : IAuthService
 
         if (!result.Succeeded)
         {
+            Console.WriteLine($"[AuthService.Register] User creation failed. Errors: {string.Join(", ", result.Errors.Select(e => e.Description))}");
             return new BaseResponseDto()
             {
                 Status = false,
-                Message = "Registration failed",
-                Data = result.Errors.Select(e => e.Description)
+                Message = "Registration failed: " + string.Join(", ", result.Errors.Select(e => e.Description)),
+                Data = result.Errors.Select(e => new { code = e.Code, description = e.Description })
             };
         }
 
-        if (dto.Role == "Owner")
+        Console.WriteLine($"[AuthService.Register] User created successfully. Assigning role: {dto.Role}");
+        string roleToAssign = dto.Role == "Owner" ? "Owner" : "Customer";
+        
+        var roleResult = await _userManager.AddToRoleAsync(user, roleToAssign);
+        if (!roleResult.Succeeded)
         {
-            var roleResult = await _userManager.AddToRoleAsync(user, "Owner");
-            if (!roleResult.Succeeded)
+            Console.WriteLine($"[AuthService.Register] Role assignment failed. Errors: {string.Join(", ", roleResult.Errors.Select(e => e.Description))}");
+            return new BaseResponseDto()
             {
-                return new BaseResponseDto()
-                {
-                    Status = false,
-                    Message = "Registration failed",
-                    Data = roleResult.Errors.Select(e => e.Description)
-                };
-            }
-        } else
-        {
-            var roleResult = await _userManager.AddToRoleAsync(user, "Customer");
-            if (!roleResult.Succeeded)
-            {
-                return new BaseResponseDto()
-                {
-                    Status = false,
-                    Message = "Registration failed",
-                    Data = roleResult.Errors.Select(e => e.Description)
-                };
-            }
-        }        
+                Status = false,
+                Message = "Registration failed: Could not assign role - " + string.Join(", ", roleResult.Errors.Select(e => e.Description)),
+                Data = roleResult.Errors.Select(e => new { code = e.Code, description = e.Description })
+            };
+        }
+        
+        Console.WriteLine($"[AuthService.Register] Role '{roleToAssign}' assigned successfully");        
         
         
         // Generate email confirmation token using the default provider
@@ -266,6 +264,8 @@ public class AuthService : IAuthService
         {
             new Claim(ClaimTypes.Email, _user!.Email!),
             new Claim(ClaimTypes.Name, _user!.Email!),
+            new Claim("sub", _user.Id), // User ID claim (JWT standard)
+            new Claim(ClaimTypes.NameIdentifier, _user.Id), // Also add as NameIdentifier for compatibility
         };
         var roles = await _userManager.GetRolesAsync(_user);
         foreach (var role in roles)

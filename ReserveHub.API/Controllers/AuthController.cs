@@ -7,7 +7,6 @@ using ReserveHub.Application.DTOs;
 using ReserveHub.Application.DTOs.Auth;
 using ReserveHub.Application.Services.Contracts;
 using ReserveHub.Infrastructure.Configurations;
-using ReserveHub.Infrastructure.Services;
 namespace ReserveHub.API.Controllers;
 
 [ApiController]
@@ -28,13 +27,22 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Register(RegisterDto dto)
     {
+        Console.WriteLine($"[AuthController.Register] Received registration request for: {dto?.Email}, Role: {dto?.Role}");
+        
         if (!ModelState.IsValid)
+        {
+            Console.WriteLine($"[AuthController.Register] ModelState is invalid. Errors: {string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage))}");
             return BadRequest(ModelState);
+        }
 
         var result = await _manager.AuthService.Register(dto);
         if (!result.Status)
+        {
+            Console.WriteLine($"[AuthController.Register] Registration failed: {result.Message}");
             return StatusCode(StatusCodes.Status400BadRequest, result);
+        }
 
+        Console.WriteLine($"[AuthController.Register] Registration successful for: {dto.Email}");
         return StatusCode(StatusCodes.Status201Created, result);
     }
 

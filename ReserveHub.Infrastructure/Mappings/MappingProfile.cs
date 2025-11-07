@@ -1,5 +1,7 @@
 using AutoMapper;
 using ReserveHub.Application.DTOs.Auth;
+using ReserveHub.Application.DTOs.Hotel;
+using ReserveHub.Domain.Entities;
 using ReserveHub.Infrastructure.Identity;
 namespace ReserveHub.Infrastructure.Mappings;
 
@@ -28,5 +30,10 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.TwoFactorEnabled, opt => opt.Ignore())
             .ForMember(dest => dest.EmailConfirmed, opt => opt.Ignore())
             .ForMember(dest => dest.PhoneNumberConfirmed, opt => opt.Ignore());
+
+        CreateMap<CreateHotelDto, Hotel>()
+            .ForMember(d => d.Id, opt => opt.Ignore())
+            .ForMember(d => d.OwnerId, opt => opt.Ignore())
+            .ForMember(d => d.Rooms, opt => opt.Ignore());
     }
 }
